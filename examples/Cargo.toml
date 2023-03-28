@@ -1,0 +1,30 @@
+[workspace]
+members = [
+  "application",
+  "async-handlers",
+  "databases",
+  "either",
+  "errors",
+  "extractors",
+  "flexible-responders",
+  "getting-started",
+  "http2",
+  "main-example",
+  "middleware",
+  "powerful-extractors",
+  "request-handlers",
+  "request-routing",
+  "requests",
+  "responses",
+  "server",
+  "static-files",
+  "testing",
+  "url-dispatch",
+  "websockets",
+]
+
+
+[patch.crates-io]
+ntex-multipart = { git = "https://github.com/ntex-rs/ntex-extras.git" }
+ntex-session = { git = "https://github.com/ntex-rs/ntex-extras.git" }
+ntex-files = { git = "https://github.com/ntex-rs/ntex-extras.git" }

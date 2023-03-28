@@ -1,0 +1,9 @@
+[package]
+name = "static-files"
+version = "1.0.0"
+edition = "2018"
+
+[dependencies]
+ntex = { version = "0.6.5", features = ["tokio"] }
+ntex-files = "0.2.0"
+mime = "0.3"

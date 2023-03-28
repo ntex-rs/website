@@ -1,0 +1,10 @@
+[package]
+name = "middleware"
+version = "1.0.0"
+edition = "2018"
+
+[dependencies]
+ntex = { version = "0.6.5", features = ["tokio", "cookie"] }
+ntex-session = { version = "0.2.0" }
+futures-util = { version = "0.3.7", default-features = false, features = ["std"] }
+env_logger = "0.7"

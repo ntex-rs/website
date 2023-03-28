@@ -1,0 +1,34 @@
+server {
+  listen       80;
+  listen  [::]:80;
+  rewrite ^/(.*)/$ /$1 permanent;
+
+  gzip on;
+  gzip_vary on;
+  gzip_proxied any;
+  gzip_comp_level 8;
+  gunzip on;
+  gzip_types application/javascript image/* text/css;
+  gzip_disable "MSIE [1-6]\.";
+
+  root /home/node/app;
+  error_page 404 /404.html;
+  try_files $uri.html $uri/index.html =404;
+
+  ## All static files will be cached.
+  location ~* ^.+\.(?:css|webp|cur|js|jpe?g|gif|htc|ico|png|html|xml|otf|ttf|eot|woff|woff2|svg)$ {
+    access_log off;
+    expires 1y;
+    add_header Cache-Control max-age=31536000;
+
+    ## No need to bleed constant updates. Send the all shebang in one
+    ## fell swoop.
+    tcp_nodelay off;
+
+    ## Set the OS file cache.
+    open_file_cache max=3000 inactive=120s;
+    open_file_cache_valid 45s;
+    open_file_cache_min_uses 2;
+    open_file_cache_errors off;
+  }
+}

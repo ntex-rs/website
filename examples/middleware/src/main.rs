@@ -4,9 +4,9 @@ pub mod logger;
 pub mod user_sessions;
 
 // <simple>
-use ntex::service::{Middleware, Service};
+use ntex::service::{Middleware, Service, ServiceCtx};
 use ntex::util::BoxFuture;
-use ntex::{web, ServiceCtx};
+use ntex::web;
 
 // There are two steps in middleware processing.
 // 1. Middleware initialization, middleware factory gets called with

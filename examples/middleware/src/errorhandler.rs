@@ -2,9 +2,9 @@
 
 // <error-handler>
 use ntex::http::header;
-use ntex::service::{Middleware, Service};
+use ntex::service::{Middleware, Service, ServiceCtx};
 use ntex::util::BoxFuture;
-use ntex::{web, ServiceCtx};
+use ntex::web;
 
 pub struct Error;
 

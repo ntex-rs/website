@@ -1,13 +1,12 @@
 // <websockets>
 use std::{cell::RefCell, io, rc::Rc, time::Duration, time::Instant};
 
+use ntex::web;
+use ntex::util::Bytes;
+use ntex::{fn_service, chain};
+use ntex::{channel::oneshot, rt, time};
 use futures::future::{ready, select, Either};
 use ntex::service::{fn_factory_with_config, fn_shutdown, Service};
-use ntex::util::Bytes;
-use ntex::web;
-use ntex::web::ws;
-use ntex::{channel::oneshot, rt, time};
-use ntex::{fn_service, pipeline};
 
 /// How often heartbeat pings are sent
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
@@ -22,9 +21,9 @@ struct WsState {
 
 /// WebSockets service factory
 async fn ws_service(
-    sink: ws::WsSink,
+    sink: web::ws::WsSink,
 ) -> Result<
-    impl Service<ws::Frame, Response = Option<ws::Message>, Error = io::Error>,
+    impl Service<web::ws::Frame, Response = Option<web::ws::Message>, Error = io::Error>,
     web::Error,
 > {
     let state = Rc::new(RefCell::new(WsState { hb: Instant::now() }));
@@ -39,22 +38,22 @@ async fn ws_service(
     let service = fn_service(move |frame| {
         let item = match frame {
             // update heartbeat
-            ws::Frame::Ping(msg) => {
+            web::ws::Frame::Ping(msg) => {
                 state.borrow_mut().hb = Instant::now();
-                Some(ws::Message::Pong(msg))
+                Some(web::ws::Message::Pong(msg))
             }
             // update heartbeat
-            ws::Frame::Pong(_) => {
+            web::ws::Frame::Pong(_) => {
                 state.borrow_mut().hb = Instant::now();
                 None
             }
             // send message back
-            ws::Frame::Text(text) => Some(ws::Message::Text(
+            web::ws::Frame::Text(text) => Some(web::ws::Message::Text(
                 String::from_utf8(Vec::from(text.as_ref())).unwrap().into(),
             )),
-            ws::Frame::Binary(bin) => Some(ws::Message::Binary(bin)),
+            web::ws::Frame::Binary(bin) => Some(web::ws::Message::Binary(bin)),
             // close connection
-            ws::Frame::Close(reason) => Some(ws::Message::Close(reason)),
+            web::ws::Frame::Close(reason) => Some(web::ws::Message::Close(reason)),
             // ignore other frames
             _ => None,
         };
@@ -67,13 +66,13 @@ async fn ws_service(
     });
 
     // pipe our service with on_shutdown callback
-    Ok(pipeline(service).and_then(on_shutdown))
+    Ok(chain(service).and_then(on_shutdown))
 }
 
 /// helper method that sends ping to client every heartbeat interval
 async fn heartbeat(
     state: Rc<RefCell<WsState>>,
-    sink: ws::WsSink,
+    sink: web::ws::WsSink,
     mut rx: oneshot::Receiver<()>,
 ) {
     loop {
@@ -88,7 +87,7 @@ async fn heartbeat(
 
                 // send ping
                 if sink
-                    .send(ws::Message::Ping(Bytes::default()))
+                    .send(web::ws::Message::Ping(Bytes::default()))
                     .await
                     .is_err()
                 {
@@ -105,7 +104,7 @@ async fn heartbeat(
 
 /// do websocket handshake and start web sockets service
 async fn ws_index(req: web::HttpRequest) -> Result<web::HttpResponse, web::Error> {
-    ws::start(req, fn_factory_with_config(ws_service)).await
+    web::ws::start(req, fn_factory_with_config(ws_service)).await
 }
 
 #[ntex::main]

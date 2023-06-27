@@ -4,7 +4,7 @@ pub mod logger;
 pub mod user_sessions;
 
 // <simple>
-use ntex::service::{Middleware, Service};
+use ntex::service::{Middleware, Service, ServiceCtx};
 use ntex::util::BoxFuture;
 use ntex::web;
 
@@ -37,11 +37,10 @@ where
 
     ntex::forward_poll_ready!(service);
 
-    fn call(&self, req: web::WebRequest<Err>) -> Self::Future<'_> {
+    fn call<'a>(&'a self, req: web::WebRequest<Err>, ctx: ServiceCtx<'a, Self>) -> Self::Future<'_> {
         println!("Hi from start. You requested: {}", req.path());
 
-        let fut = self.service.call(req);
-
+        let fut = ctx.call(&self.service, req);
         Box::pin(async move {
             let res = fut.await?;
 

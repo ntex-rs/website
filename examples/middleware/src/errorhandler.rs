@@ -4,7 +4,7 @@
 use ntex::http::header;
 use ntex::service::{Middleware, Service};
 use ntex::util::BoxFuture;
-use ntex::web;
+use ntex::{web, ServiceCtx};
 
 pub struct Error;
 
@@ -31,9 +31,9 @@ where
 
     ntex::forward_poll_ready!(service);
 
-    fn call(&self, req: web::WebRequest<Err>) -> Self::Future<'_> {
+    fn call<'a>(&'a self, req: web::WebRequest<Err>, ctx: ServiceCtx<'a, Self>) -> Self::Future<'_> {
         Box::pin(async move {
-            self.service.call(req).await.map(|mut res| {
+            ctx.call(&self.service, req).await.map(|mut res| {
                 let status = res.status();
                 if status.is_client_error() || status.is_server_error() {
                     res.headers_mut().insert(

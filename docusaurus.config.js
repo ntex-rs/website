@@ -43,7 +43,7 @@ module.exports = {
     },
     prism: {
       // dracula is closest to docs.rs, where keywords are highlighted
-      theme: require('prism-react-renderer/themes/okaidia'),
+      theme: require('prism-react-renderer').themes.okaidia,
       additionalLanguages: ['rust', 'toml'],
       defaultLanguage: 'rust'
     }

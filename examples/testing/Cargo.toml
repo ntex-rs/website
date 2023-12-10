@@ -4,7 +4,7 @@ version = "1.0.0"
 edition = "2018"
 
 [dependencies]
-ntex = { version = "0.7.2", features = ["tokio"] }
+ntex = { version = "0.7", features = ["tokio"] }
 futures = "0.3"
 futures-util = "0.3"
 bytes = "0.5"

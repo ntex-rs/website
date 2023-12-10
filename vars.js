@@ -1,4 +1,4 @@
 module.exports = {
-  rustVersion: '1.65',
-  ntexMajorVersion: '0.6',
+  rustVersion: '1.66',
+  ntexMajorVersion: '0.7',
 };

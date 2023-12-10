@@ -59,7 +59,7 @@ const highlights = [
     title: 'Blazingly Fast',
     description: (
       <>
-        Ntex is blazingly fast. Don't take our word for it -- <a href='https://www.techempower.com/benchmarks/#section=data-r20&hw=ph&test=fortune' target='_blank' rel='noopener noreferrer'>see for yourself!</a>
+        Ntex is blazingly fast. Don't take our word for it -- <a href='https://www.techempower.com/benchmarks/#hw=ph&test=fortune&section=data-r22' target='_blank' rel='noopener noreferrer'>see for yourself!</a>
       </>
     ),
   },

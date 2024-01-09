@@ -3,9 +3,9 @@ pub mod errorhandler;
 pub mod logger;
 pub mod user_sessions;
 
+use futures_util::Future;
 // <simple>
 use ntex::service::{Middleware, Service, ServiceCtx};
-use ntex::util::BoxFuture;
 use ntex::web;
 
 // There are two steps in middleware processing.
@@ -33,17 +33,14 @@ where
 {
     type Response = web::WebResponse;
     type Error = web::Error;
-    type Future<'f> = BoxFuture<'f, Result<Self::Response, Self::Error>> where Self: 'f;
 
     ntex::forward_poll_ready!(service);
 
-    fn call<'a>(&'a self, req: web::WebRequest<Err>, ctx: ServiceCtx<'a, Self>) -> Self::Future<'_> {
+    fn call(&self, req: web::WebRequest<Err>, ctx: ServiceCtx<Self>) -> impl Future<Output = Result<Self::Response, Self::Error>> {
         println!("Hi from start. You requested: {}", req.path());
-
-        let fut = ctx.call(&self.service, req);
         Box::pin(async move {
+            let fut = ctx.call(&self.service, req);
             let res = fut.await?;
-
             println!("Hi from response");
             Ok(res)
         })

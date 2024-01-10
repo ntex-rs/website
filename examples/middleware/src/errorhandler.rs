@@ -1,6 +1,5 @@
 #![allow(dead_code)]
 
-use futures_util::Future;
 // <error-handler>
 use ntex::http::header;
 use ntex::service::{Middleware, Service, ServiceCtx};
@@ -30,8 +29,7 @@ where
 
     ntex::forward_poll_ready!(service);
 
-    fn call(&self, req: web::WebRequest<Err>, ctx: ServiceCtx<Self>) -> impl Future<Output = Result<Self::Response, Self::Error>> {
-        Box::pin(async move {
+    async fn call<'a>(&self, req: web::WebRequest<Err>, ctx: ServiceCtx<'a, Self>) -> Result<Self::Response, Self::Error> {
             ctx.call(&self.service, req).await.map(|mut res| {
                 let status = res.status();
                 if status.is_client_error() || status.is_server_error() {
@@ -42,7 +40,6 @@ where
                 }
                 res
             })
-        })
     }
 }
 

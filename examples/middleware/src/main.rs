@@ -3,7 +3,6 @@ pub mod errorhandler;
 pub mod logger;
 pub mod user_sessions;
 
-use futures_util::Future;
 // <simple>
 use ntex::service::{Middleware, Service, ServiceCtx};
 use ntex::web;
@@ -36,14 +35,11 @@ where
 
     ntex::forward_poll_ready!(service);
 
-    fn call(&self, req: web::WebRequest<Err>, ctx: ServiceCtx<Self>) -> impl Future<Output = Result<Self::Response, Self::Error>> {
+    async fn call<'a>(&self, req: web::WebRequest<Err>, ctx: ServiceCtx<'a, Self>) -> Result<Self::Response, Self::Error> {
         println!("Hi from start. You requested: {}", req.path());
-        Box::pin(async move {
-            let fut = ctx.call(&self.service, req);
-            let res = fut.await?;
-            println!("Hi from response");
-            Ok(res)
-        })
+        let res = ctx.call(&self.service, req).await?;
+        println!("Hi from response");
+        Ok(res)
     }
 }
 // </simple>

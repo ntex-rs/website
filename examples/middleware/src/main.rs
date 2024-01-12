@@ -35,7 +35,7 @@ where
 
     ntex::forward_poll_ready!(service);
 
-    async fn call<'a>(&self, req: web::WebRequest<Err>, ctx: ServiceCtx<'a, Self>) -> Result<Self::Response, Self::Error> {
+    async fn call(&self, req: web::WebRequest<Err>, ctx: ServiceCtx<'_, Self>) -> Result<Self::Response, Self::Error> {
         println!("Hi from start. You requested: {}", req.path());
         let res = ctx.call(&self.service, req).await?;
         println!("Hi from response");

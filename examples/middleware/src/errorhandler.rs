@@ -29,7 +29,7 @@ where
 
     ntex::forward_poll_ready!(service);
 
-    async fn call<'a>(&self, req: web::WebRequest<Err>, ctx: ServiceCtx<'a, Self>) -> Result<Self::Response, Self::Error> {
+    async fn call(&self, req: web::WebRequest<Err>, ctx: ServiceCtx<'_, Self>) -> Result<Self::Response, Self::Error> {
             ctx.call(&self.service, req).await.map(|mut res| {
                 let status = res.status();
                 if status.is_client_error() || status.is_server_error() {

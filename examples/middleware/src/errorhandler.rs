@@ -3,7 +3,6 @@
 // <error-handler>
 use ntex::http::header;
 use ntex::service::{Middleware, Service, ServiceCtx};
-use ntex::util::BoxFuture;
 use ntex::web;
 
 pub struct Error;
@@ -27,12 +26,10 @@ where
 {
     type Response = web::WebResponse;
     type Error = web::Error;
-    type Future<'f> = BoxFuture<'f, Result<Self::Response, Self::Error>> where Self: 'f;
 
     ntex::forward_poll_ready!(service);
 
-    fn call<'a>(&'a self, req: web::WebRequest<Err>, ctx: ServiceCtx<'a, Self>) -> Self::Future<'_> {
-        Box::pin(async move {
+    async fn call(&self, req: web::WebRequest<Err>, ctx: ServiceCtx<'_, Self>) -> Result<Self::Response, Self::Error> {
             ctx.call(&self.service, req).await.map(|mut res| {
                 let status = res.status();
                 if status.is_client_error() || status.is_server_error() {
@@ -43,7 +40,6 @@ where
                 }
                 res
             })
-        })
     }
 }
 

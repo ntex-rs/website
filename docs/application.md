@@ -38,7 +38,7 @@ Any number of state types could be registered within the application.
 
 `HttpServer` accepts an application factory rather than an application instance. An `HttpServer` constructs an application instance for each thread. Therefore, application data must be constructed multiple times. If you want to share data between different threads, a shareable object should be used, e.g. `Send` + `Sync`.
 
-Internally, [`web::types::State`][data] uses `Arc`. So in order to avoid creating two `Arc`s, we should create our data before registering it using [`App::state()`][appstate].
+Internally, [`web::types::State`][state] uses `Arc`. So in order to avoid creating two `Arc`s, we should create our data before registering it using [`App::state()`][appstate].
 
 In the following example, we will write an application with mutable, shared state. First, we define our state and create our handler:
 
@@ -93,7 +93,7 @@ Each [`ServiceConfig`][serviceconfig] can have its own `state`, `routes`, and `s
 [guardtrait]: https://docs.rs/ntex/latest/ntex/web/guard/trait.Guard.html
 [guardfuncs]: https://docs.rs/ntex/latest/ntex/web/guard/index.html#functions
 [guardheader]: https://docs.rs/ntex/latest/ntex/web/guard/fn.Header.html
-[data]: https://docs.rs/ntex/latest/ntex/web/types/struct.State.html
+[state]: https://docs.rs/ntex/latest/ntex/web/types/struct.State.html
 [app]: https://docs.rs/ntex/latest/ntex/web/struct.App.html
 [appconfig]: https://docs.rs/ntex/latest/ntex/web/struct.App.html#method.configure
 [appstate]: https://docs.rs/ntex/latest/ntex/web/struct.App.html#method.app_data

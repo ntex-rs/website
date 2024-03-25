@@ -56,7 +56,7 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
-            'https://github.com/ntex-rs/ntex-website/edit/master/',
+            'https://github.com/ntex-rs/website/edit/master/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),

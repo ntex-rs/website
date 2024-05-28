@@ -5,6 +5,6 @@ edition = "2018"
 
 [dependencies]
 ntex = { version = "2", features = ["tokio", "cookie"] }
-ntex-session = { version = "1" }
+ntex-session = { version = "2" }
 futures-util = { version = "0.3.7", default-features = false, features = ["std"] }
 env_logger = "0.10.0"

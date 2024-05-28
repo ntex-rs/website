@@ -33,7 +33,7 @@ where
     type Response = web::WebResponse;
     type Error = web::Error;
 
-    ntex::forward_poll_ready!(service);
+    ntex::forward_ready!(service);
 
     async fn call(&self, req: web::WebRequest<Err>, ctx: ServiceCtx<'_, Self>) -> Result<Self::Response, Self::Error> {
         println!("Hi from start. You requested: {}", req.path());

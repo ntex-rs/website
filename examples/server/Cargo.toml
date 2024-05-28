@@ -5,7 +5,7 @@ workspace = "../"
 edition = "2018"
 
 [dependencies]
-ntex = { version = "1", features = ["tokio", "openssl"] }
+ntex = { version = "2", features = ["tokio", "openssl"] }
 futures = "0.3"
 openssl = { version = "0.10", features = ["vendored"] }
 tokio = { version = "1.16.1", features = ["full"] }

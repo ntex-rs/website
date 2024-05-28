@@ -27,7 +27,7 @@ where
     type Response = web::WebResponse;
     type Error = web::Error;
 
-    ntex::forward_poll_ready!(service);
+    ntex::forward_ready!(service);
 
     async fn call(&self, req: web::WebRequest<Err>, ctx: ServiceCtx<'_, Self>) -> Result<Self::Response, Self::Error> {
             ctx.call(&self.service, req).await.map(|mut res| {

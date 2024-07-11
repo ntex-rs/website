@@ -17,7 +17,7 @@ async fn index(data: web::types::State<AppStateWithCounter>) -> String {
 // <make_app_mutable>
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    // Note: web::Data created _outside_ HttpServer::new closure
+    // Note: app state created _outside_ HttpServer::new closure
     let counter = AppStateWithCounter {
         counter: Mutex::new(0),
     };

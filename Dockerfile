@@ -1,4 +1,4 @@
-FROM node:20.10.0-alpine AS builder
+FROM node:20.15.1-alpine AS builder
 
 RUN apk add git
 
@@ -23,7 +23,7 @@ COPY --chown=node ./.git ./.git
 
 RUN npm run build
 
-FROM nginx:1.25.3-alpine3.18-slim
+FROM nginx:1.27.0-alpine3.19-slim
 
 WORKDIR /etc/nginx/conf.d
 

@@ -7,7 +7,7 @@ on:
       - completed
 
 jobs:
-  post_deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,7 +16,7 @@ jobs:
 
     - name: Install nanocl cli
       run: |
-        wget https://download.next-hat.com/repo/linux/ubuntu/pool/stable/main/nanocl_0.15.0_amd64.deb
+        wget https://github.com/next-hat/nanocl/releases/download/nanocl-0.15.0/nanocl_0.15.0_amd64.deb
         sudo dpkg -i nanocl_0.15.0_amd64.deb
         rm nanocl_0.15.0_amd64.deb
 

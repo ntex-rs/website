@@ -1,0 +1,30 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ["Build and publish Docker image"]
+    types:
+      - completed
+
+jobs:
+  post_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install nanocl cli
+      run: |
+        wget https://download.next-hat.com/repo/linux/ubuntu/pool/stable/main/nanocl_0.15.0_amd64.deb
+        sudo dpkg -i nanocl_0.15.0_amd64.deb
+        rm nanocl_0.15.0_amd64.deb
+
+    - name: Deploy to production
+      run: |
+        version=$(jq -r '.version' package.json)
+        nanocl state apply -- --version $version
+      env:
+        HOST: ${{ secrets.NANOCL_HOST }}
+        CERT: ${{ secrets.NANOCL_CERT }}
+        CERT_KEY: ${{ secrets.NANOCL_CERT_KEY }}

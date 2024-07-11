@@ -1,0 +1,26 @@
+ApiVersion: v0.15
+
+Args:
+  - Name: version
+    Kind: String
+
+Namespace: ntex
+
+Cargoes:
+- Name: website
+  Container:
+    Image: ntex-rs/website:${{ Args.version }}
+
+Resources:
+- Name: ntex.rs
+  Kind: ncproxy.io/rule
+  Data:
+    Rules:
+    - Domain: ntex.rs
+      Network: Public
+      Ssl: cert.ntex.rs
+      Locations:
+      - Path: /
+        Target:
+          Key: website.ntex.c
+          Port: 80

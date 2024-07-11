@@ -88,7 +88,7 @@ Each [`ServiceConfig`][serviceconfig] can have its own `state`, `routes`, and `s
 
 <!-- LINKS -->
 
-[usingappprefix]: /docs/url-dispatch/index.html#using-an-application-prefix-to-compose-applications
+[usingappprefix]: /docs/url-dispatch
 [stateexample]: https://github.com/ntex-rs/examples/blob/master/basics/src/main.rs
 [guardtrait]: https://docs.rs/ntex/latest/ntex/web/guard/trait.Guard.html
 [guardfuncs]: https://docs.rs/ntex/latest/ntex/web/guard/index.html#functions

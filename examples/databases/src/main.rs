@@ -84,9 +84,10 @@ async fn index(
     name: web::types::Path<(String,)>,
 ) -> Result<impl web::Responder, web::Error> {
     let (name,) = name.into_inner();
+    let pool = pool.get_ref().clone();
 
-    let mut conn = pool.get().expect("couldn't get db connection from pool");
     let user = web::block(move || {
+        let mut conn = pool.get().expect("couldn't get db connection from pool");
         // Obtaining a connection from the pool is also a potentially blocking operation.
         // So, it should be called within the `web::block` closure, as well.
         insert_new_user(&mut conn, name)

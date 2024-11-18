@@ -2,12 +2,16 @@ ApiVersion: v0.16
 
 Namespace: ntex
 
+Args:
+- Name: version
+  Kind: String
+
 Cargoes:
 - Name: doc
   ImagePullPolicy: Always
   ImagePullSecret: registry.ghcr.io
   Container:
-    Image: ghcr.io/ntex-rs/website:2.0.3
+    Image: ghcr.io/ntex-rs/website:${{ Args.version }}
 
 Resources:
 - Name: http.ntex.rs

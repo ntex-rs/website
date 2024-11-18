@@ -16,9 +16,9 @@ jobs:
 
     - name: Install nanocl cli
       run: |
-        wget https://github.com/next-hat/nanocl/releases/download/nanocl-0.15.0/nanocl_0.15.0_amd64.deb
-        sudo dpkg -i nanocl_0.15.0_amd64.deb
-        rm nanocl_0.15.0_amd64.deb
+        wget https://github.com/next-hat/nanocl/releases/download/nanocl-0.16.1-nightly/nanocl_0.16.1_amd64.deb
+        sudo dpkg -i nanocl_0.16.1_amd64.deb
+        rm nanocl_0.16.1_amd64.deb
 
     - name: Deploy to production
       run: |

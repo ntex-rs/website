@@ -1,18 +1,16 @@
-ApiVersion: v0.15
-
-Args:
-  - Name: version
-    Kind: String
+ApiVersion: v0.16
 
 Namespace: ntex
 
 Cargoes:
-- Name: website
+- Name: doc
+  ImagePullPolicy: Always
+  ImagePullSecret: registry.ghcr.io
   Container:
-    Image: ntex-rs/website:${{ Args.version }}
+    Image: ghcr.io/ntex-rs/website:2.0.3
 
 Resources:
-- Name: ntex.rs
+- Name: http.ntex.rs
   Kind: ncproxy.io/rule
   Data:
     Rules:
@@ -22,5 +20,12 @@ Resources:
       Locations:
       - Path: /
         Target:
-          Key: website.ntex.c
+          Key: doc.ntex.c
           Port: 80
+    - Domain: ntex.rs
+      Network: Public
+      Locations:
+      - Path: /
+        Target:
+          Url: https://ntex.rs
+          Redirect: Temporary

@@ -22,9 +22,10 @@ jobs:
 
     - name: Deploy to production
       run: |
-        version=$(jq -r '.version' package.json)
+        VERSION=$(jq -r '.version' package.json)
         nanocl version
-        nanocl state apply -s Statefile.yml -- --version $version
+        echo $VERSION
+        nanocl state apply -s Statefile.yml -- --version $VERSION
       env:
         HOST: ${{ secrets.NANOCL_HOST }}
         CERT: ${{ secrets.NANOCL_CERT }}

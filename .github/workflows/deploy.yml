@@ -25,7 +25,7 @@ jobs:
         VERSION=$(jq -r '.version' package.json)
         nanocl version
         echo $VERSION
-        nanocl state apply -s Statefile.yml -- --version $VERSION
+        nanocl state apply -ys Statefile.yml -- --version $VERSION
       env:
         HOST: ${{ secrets.NANOCL_HOST }}
         CERT: ${{ secrets.NANOCL_CERT }}

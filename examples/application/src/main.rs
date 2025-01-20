@@ -6,6 +6,7 @@ pub mod config;
 pub mod scope;
 pub mod state;
 pub mod vh;
+pub mod mutable_state;
 
 // <multi>
 #[ntex::main]

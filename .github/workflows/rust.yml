@@ -17,6 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions-rust-lang/setup-rust-toolchain@v1.6
+      - name: install deps
+        run: |
+          sudo apt-get install -y libsqlite3-dev
       - name: test examples
         run: |
           cd examples

@@ -1,9 +1,10 @@
 // <setup_mutable>
 use ntex::web;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
+#[derive(Clone)]
 struct AppStateWithCounter {
-    counter: Mutex<i32>, // <- Mutex is necessary to mutate safely across threads
+    counter: Arc<Mutex<i32>>, // <- Mutex is necessary to mutate safely across threads
 }
 
 async fn index(data: web::types::State<AppStateWithCounter>) -> String {
@@ -19,7 +20,7 @@ async fn index(data: web::types::State<AppStateWithCounter>) -> String {
 async fn main() -> std::io::Result<()> {
     // Note: app state created _outside_ HttpServer::new closure
     let counter = AppStateWithCounter {
-        counter: Mutex::new(0),
+        counter: Arc::new(Mutex::new(0)),
     };
 
     web::HttpServer::new(move || {

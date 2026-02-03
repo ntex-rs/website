@@ -14,7 +14,7 @@ async fn index(req: web::HttpRequest) -> Result<NamedFile, web::Error> {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| web::App::new().route("/{filename}*", web::get().to(index)))
+    web::HttpServer::new(async || web::App::new().route("/{filename}*", web::get().to(index)))
         .bind(("127.0.0.1", 8080))?
         .run()
         .await

@@ -14,7 +14,7 @@ async fn index(_req: web::HttpRequest) -> web::HttpResponse {
 
 #[ntex::main]
 async fn main() -> io::Result<()> {
-    web::HttpServer::new(|| web::App::new().service(index))
+    web::HttpServer::new(async || web::App::new().service(index))
         .bind(("127.0.0.1", 8080))
         .unwrap()
         .run()

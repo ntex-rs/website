@@ -67,7 +67,7 @@ async fn main() -> io::Result<()> {
         .expect("database URL should be valid path to SQLite DB file");
 
     // start HTTP server on port 8080
-    web::HttpServer::new(move || {
+    web::HttpServer::new(async move || {
         web::App::new()
             .state(pool.clone())
             .route("/{name}", web::get().to(index))

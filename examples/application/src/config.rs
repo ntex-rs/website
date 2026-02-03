@@ -23,7 +23,7 @@ fn config(cfg: &mut web::ServiceConfig) {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new()
             .configure(config)
             .service(web::scope("/api").configure(scoped_config))

@@ -13,10 +13,10 @@ use ntex::web;
 // 2. Middleware's call method gets called with normal request.
 pub struct SayHi;
 
-impl<S> Middleware<S> for SayHi {
+impl<S, Cfg> Middleware<S, Cfg> for SayHi {
     type Service = SayHiMiddleware<S>;
 
-    fn create(&self, service: S) -> Self::Service {
+    fn create(&self, service: S, _: Cfg) -> Self::Service {
         SayHiMiddleware { service }
     }
 }
@@ -46,7 +46,7 @@ where
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new().wrap(SayHi).service(
             web::resource("/").to(|| async {
                 "Hello, middleware! Check the console where the server is run."

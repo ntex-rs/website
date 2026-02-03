@@ -17,7 +17,7 @@ async fn index() -> web::HttpResponse {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new()
             .wrap(web::middleware::Compress::default())
             .service(index)

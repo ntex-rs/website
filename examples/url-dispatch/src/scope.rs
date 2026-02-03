@@ -13,7 +13,7 @@ async fn user_detail(path: web::types::Path<(u32,)>) -> web::HttpResponse {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new().service(
             web::scope("/users")
                 .service(show_users)

@@ -49,7 +49,7 @@ async fn error3() -> Result<&'static str, MyError> {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new()
             .service(index)
             .service(error2)

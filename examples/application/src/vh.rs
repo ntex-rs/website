@@ -3,7 +3,7 @@ use ntex::web;
 // <vh>
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new()
             .service(
                 web::scope("/")

@@ -35,7 +35,7 @@ async fn index_manual(
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| web::App::new().service(index_manual))
+    web::HttpServer::new(async || web::App::new().service(index_manual))
         .bind(("127.0.0.1", 8080))?
         .run()
         .await

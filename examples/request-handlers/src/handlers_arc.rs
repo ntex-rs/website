@@ -42,7 +42,7 @@ async fn main() -> std::io::Result<()> {
         global_count: Arc::new(AtomicUsize::new(0)),
     };
 
-    web::HttpServer::new(move || {
+    web::HttpServer::new(async move || {
         web::App::new()
             .state(data.clone())
             .service(show_count)

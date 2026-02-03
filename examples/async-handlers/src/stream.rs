@@ -14,7 +14,7 @@ async fn stream() -> web::HttpResponse {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| web::App::new().service(stream))
+    web::HttpServer::new(async || web::App::new().service(stream))
         .bind(("127.0.0.1", 8080))?
         .run()
         .await

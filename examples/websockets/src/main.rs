@@ -1,12 +1,12 @@
 // <websockets>
 use std::{cell::RefCell, io, rc::Rc, time::Duration, time::Instant};
 
-use ntex::web;
-use ntex::util::Bytes;
-use ntex::{fn_service, chain};
-use ntex::{channel::oneshot, rt, time};
 use futures::future::{ready, select, Either};
 use ntex::service::{fn_factory_with_config, fn_shutdown, Service};
+use ntex::util::Bytes;
+use ntex::web;
+use ntex::{chain, fn_service};
+use ntex::{channel::oneshot, rt, time};
 
 /// How often heartbeat pings are sent
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
@@ -61,7 +61,7 @@ async fn ws_service(
     });
 
     // handler service for shutdown notification that stop heartbeat task
-    let on_shutdown = fn_shutdown(move || {
+    let on_shutdown = fn_shutdown(async move || {
         let _ = tx.send(());
     });
 
@@ -104,15 +104,24 @@ async fn heartbeat(
 
 /// do websocket handshake and start web sockets service
 async fn ws_index(req: web::HttpRequest) -> Result<web::HttpResponse, web::Error> {
-    web::ws::start(req, fn_factory_with_config(ws_service)).await
+    // iterate over subprotocols requested by the client in the `Sec-Websocket-Protocol`
+    // header and negotiate a chosen subprotocol as per the RFC 6455 Section 1.9
+    let chosen: Option<String> = web::ws::subprotocols(&req)
+        .find(|p| *p == "my-subprotocol")
+        .map(String::from);
+
+    // or simply ignore subprotocols and do not send `Sec-Websocket-Protocol` header in upgrade response
+    // let chosen = None::<&str>;
+
+    web::ws::start(req, chosen, fn_factory_with_config(ws_service)).await
 }
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::server(|| {
+    web::server(async || {
         web::App::new()
             // enable logger
-            .wrap(web::middleware::Logger::default())
+            .middleware(web::middleware::Logger::default())
             // websocket route
             .service(web::resource("/ws/").route(web::get().to(ws_index)))
     })

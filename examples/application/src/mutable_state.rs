@@ -23,7 +23,7 @@ async fn main() -> std::io::Result<()> {
         counter: Arc::new(Mutex::new(0)),
     };
 
-    web::HttpServer::new(move || {
+    web::HttpServer::new(async move || {
         // move counter into the closure
         web::App::new()
             .state(counter.clone()) // <- register the created data

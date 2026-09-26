@@ -9,7 +9,7 @@ async fn index() -> impl web::Responder {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new().service(
             // prefixes all resources and routes attached to it...
             web::scope("/app")

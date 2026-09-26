@@ -4,7 +4,7 @@ use std::io;
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
-    let srv = web::HttpServer::new(|| {
+    let srv = web::HttpServer::new(async || {
         web::App::new().route(
             "/",
             web::get().to(|| async { web::HttpResponse::Ok().finish() }),

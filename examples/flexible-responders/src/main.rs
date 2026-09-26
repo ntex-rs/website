@@ -18,7 +18,7 @@ async fn current_temperature() -> impl web::Responder {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new()
             .service(web::resource("/").to(hello_world))
             .service(web::resource("/temp").to(current_temperature))

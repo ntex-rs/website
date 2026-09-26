@@ -12,7 +12,7 @@ impl web::guard::Guard for ContentTypeHeader {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new().route(
             "/",
             web::route()

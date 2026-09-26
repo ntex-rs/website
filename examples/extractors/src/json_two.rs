@@ -16,7 +16,7 @@ async fn index(info: web::types::Json<Info>) -> impl web::Responder {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         let json_config = web::types::JsonConfig::default().limit(4096);
 
         web::App::new().service(

@@ -4,7 +4,7 @@ use ntex::web;
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new()
             .wrap(web::middleware::DefaultHeaders::new().header("X-Version", "0.2"))
             .service(

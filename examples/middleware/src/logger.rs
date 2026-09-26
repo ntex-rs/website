@@ -6,7 +6,7 @@ use ntex::web;
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(Env::default().default_filter_or("info"));
 
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new()
             .wrap(web::middleware::Logger::default())
             .wrap(web::middleware::Logger::new("%a %{User-Agent}i"))

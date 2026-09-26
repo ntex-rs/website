@@ -16,7 +16,7 @@ async fn index(data: web::types::State<AppState>) -> String {
 // <start_app>
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new()
             .state(AppState {
                 app_name: String::from("Ntex"),

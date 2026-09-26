@@ -61,7 +61,7 @@ async fn ws_service(
     });
 
     // handler service for shutdown notification that stop heartbeat task
-    let on_shutdown = fn_shutdown(move || {
+    let on_shutdown = fn_shutdown(async move || {
         let _ = tx.send(());
     });
 
@@ -104,12 +104,12 @@ async fn heartbeat(
 
 /// do websocket handshake and start web sockets service
 async fn ws_index(req: web::HttpRequest) -> Result<web::HttpResponse, web::Error> {
-    web::ws::start(req, fn_factory_with_config(ws_service)).await
+    web::ws::start(req, None::<&str>, fn_factory_with_config(ws_service)).await
 }
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::server(|| {
+    web::server(async || {
         web::App::new()
             // enable logger
             .wrap(web::middleware::Logger::default())

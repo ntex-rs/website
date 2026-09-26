@@ -25,7 +25,7 @@ async fn main() -> std::io::Result<()> {
         count: Cell::new(0),
     };
 
-    web::HttpServer::new(move || {
+    web::HttpServer::new(async move || {
         web::App::new()
             .state(data.clone())
             .route("/", web::to(show_count))

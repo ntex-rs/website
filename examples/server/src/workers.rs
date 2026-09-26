@@ -3,7 +3,7 @@ use ntex::web;
 
 #[ntex::main]
 async fn main() {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new().route(
             "/",
             web::get().to(|| async { web::HttpResponse::Ok().finish() }),

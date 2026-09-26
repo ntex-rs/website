@@ -7,10 +7,10 @@ use ntex::web;
 
 pub struct Error;
 
-impl<S> Middleware<S> for Error {
+impl<S, Cfg> Middleware<S, Cfg> for Error {
     type Service = ErrorMiddleware<S>;
 
-    fn create(&self, service: S) -> Self::Service {
+    fn create(&self, service: S, _: Cfg) -> Self::Service {
         ErrorMiddleware { service }
     }
 }
@@ -45,7 +45,7 @@ where
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new()
             .wrap(Error)
             .service(web::resource("/").route(

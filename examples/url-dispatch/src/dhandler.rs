@@ -8,7 +8,7 @@ async fn index(_req: web::HttpRequest) -> impl web::Responder {
 // <default>
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    web::HttpServer::new(async || {
         web::App::new()
             .service(web::resource("/").route(web::get().to(index)))
             .default_service(

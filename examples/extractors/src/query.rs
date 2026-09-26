@@ -17,7 +17,7 @@ async fn index(info: web::types::Query<Info>) -> String {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| web::App::new().service(index))
+    web::HttpServer::new(async || web::App::new().service(index))
         .bind(("127.0.0.1", 8080))?
         .run()
         .await

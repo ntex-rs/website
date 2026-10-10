@@ -37,8 +37,8 @@ jobs:
 
       - name: Build website
         env:
-          DOCUSAURUS_URL: https://ntex-rs.github.io
-          DOCUSAURUS_BASE_URL: /website/
+          DOCUSAURUS_URL: https://ntex.rs
+          DOCUSAURUS_BASE_URL: /
         run: npm run build
 
       - name: Upload Pages artifact

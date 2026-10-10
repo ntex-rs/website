@@ -4,8 +4,8 @@ const repo = process.env.GITHUB_REPOSITORY || 'ntex-rs/website';
 const [organizationName = 'ntex-rs', projectName = 'website'] = repo.split('/');
 
 module.exports = {
-  title: 'Ntex',
-  tagline: 'Ntex is a powerful, pragmatic, and extremely fast framework for composable networking services for Rust',
+  title: 'ntex',
+  tagline: 'ntex is a powerful, pragmatic, and extremely fast framework for composable networking services for Rust',
   url: process.env.DOCUSAURUS_URL || 'https://ntex.rs',
   baseUrl: process.env.DOCUSAURUS_BASE_URL || '/',
   onBrokenLinks: 'throw',
@@ -15,9 +15,9 @@ module.exports = {
   projectName: process.env.DOCUSAURUS_PROJECT || projectName,
   themeConfig: {
     navbar: {
-      title: 'Ntex',
+      title: 'ntex',
       logo: {
-        alt: 'Ntex Logo',
+        alt: 'ntex logo',
         src: 'img/ntex-icon.svg',
       },
       items: [
@@ -42,7 +42,7 @@ module.exports = {
       ],
     },
     footer: {
-      copyright: `Copyright © ${new Date().getFullYear()} The Ntex Contributors`,
+      copyright: `Copyright © ${new Date().getFullYear()} The ntex contributors`,
     },
     prism: {
       // dracula is closest to docs.rs, where keywords are highlighted

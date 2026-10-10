@@ -1,4 +1,4 @@
-# Ntex Website
+# ntex website
 
 ## Getting Started
 

@@ -31,7 +31,7 @@ Using the `Json` type this way instead of calling the `.json` method on a `HttpR
 
 ## Content encoding
 
-Ntex can automatically _compress_ payloads with the [_Compress middleware_][compressmidddleware]. Compression requires the `compress` crate feature. The following codecs are supported:
+ntex can automatically _compress_ payloads with the [_Compress middleware_][compressmidddleware]. Compression requires the `compress` crate feature. The following codecs are supported:
 
 - Zstd
 - Gzip

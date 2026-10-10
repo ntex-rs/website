@@ -190,7 +190,7 @@ For this example for path '/a/1/2/', values v1 and v2 will resolve to "1" and "2
 
 ### Path information extractor
 
-Ntex provides functionality for type safe path information extraction. [_Path_][pathstruct] extracts information, destination type could be defined in several different forms. Simplest approach is to use `tuple` type. Each element in tuple must correspond to one element from path pattern. i.e. you can match path pattern `/{id}/{username}/` against `Path<(u32, String)>` type, but `Path<(String, String, String)>` type will always fail.
+ntex provides functionality for type safe path information extraction. [_Path_][pathstruct] extracts information, destination type could be defined in several different forms. Simplest approach is to use `tuple` type. Each element in tuple must correspond to one element from path pattern. i.e. you can match path pattern `/{id}/{username}/` against `Path<(u32, String)>` type, but `Path<(String, String, String)>` type will always fail.
 
 <CodeBlock example="url-dispatch" file="path.rs" section="path" />
 
@@ -212,7 +212,7 @@ In the above example, the _show_users_ route will have an effective route patter
 
 ## Custom route guard
 
-You can think of a guard as a simple function that accepts a _request_ object reference and returns _true_ or _false_. Formally, a guard is any object that implements the [`Guard`][guardtrait] trait. Ntex provides several predicates, you can check [functions section][guardfuncs] of API docs.
+You can think of a guard as a simple function that accepts a _request_ object reference and returns _true_ or _false_. Formally, a guard is any object that implements the [`Guard`][guardtrait] trait. ntex provides several predicates, you can check [functions section][guardfuncs] of API docs.
 
 Here is a simple guard that check that a request contains a specific _header_:
 

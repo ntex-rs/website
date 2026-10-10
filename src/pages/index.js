@@ -44,14 +44,14 @@ const highlights = [
     icon: faBatteryFull,
     title: 'Feature Rich',
     description: (
-      <>Ntex provides a lot of features out of box. HTTP/2, logging, etc.</>
+      <>ntex provides a lot of features out of box. HTTP/2, logging, etc.</>
     ),
   },
   {
     icon: faPuzzlePiece,
     title: 'Extensible',
     description: (
-      <>Easily create your own libraries that any Ntex application can use.</>
+      <>Easily create your own libraries that any ntex application can use.</>
     ),
   },
   {
@@ -59,7 +59,7 @@ const highlights = [
     title: 'Blazingly Fast',
     description: (
       <>
-        Ntex is blazingly fast. Don't take our word for it -- <a href='https://www.techempower.com/benchmarks/#hw=ph&test=fortune&section=data-r22' target='_blank' rel='noopener noreferrer'>see for yourself!</a>
+        ntex is blazingly fast. Don't take our word for it -- <a href='https://www.techempower.com/benchmarks/#hw=ph&test=fortune&section=data-r22' target='_blank' rel='noopener noreferrer'>see for yourself!</a>
       </>
     ),
   },
@@ -74,7 +74,7 @@ const Hero = () => {
       <div className="container">
         <img
           src={useBaseUrl(`img/ntex-icon.svg`)}
-          alt="Ntex Logo"
+          alt="ntex"
           className={styles.logo}
         />
 
@@ -137,7 +137,7 @@ const Examples = () => {
           <div className={styles.featureText}>
             <h3 className={styles.featureTitle}>Hello World!</h3>
             <p>
-              Getting started with Ntex is easy. An Ntex app comes with a URL routing system that lets you match on
+              Getting started with ntex is easy. An ntex app comes with a URL routing system that lets you match on
               URLs and invoke individual handlers.
             </p>
           </div>
@@ -151,7 +151,7 @@ const Examples = () => {
           <div className={styles.featureText}>
             <h3 className={styles.featureTitle}>Flexible Responders</h3>
             <p>
-              Handler functions in Ntex can return a wide range of objects that
+              Handler functions in ntex can return a wide range of objects that
               implement the <code>Responder</code> trait. This makes it a breeze
               to return consistent responses from your APIs.
             </p>
@@ -169,7 +169,7 @@ const Examples = () => {
           <div className={styles.featureText}>
             <h3 className={styles.featureTitle}>Powerful Extractors</h3>
             <p>
-              Ntex comes with a powerful extractor system that extracts data from
+              ntex comes with a powerful extractor system that extracts data from
               the incoming HTTP request and passes it to your view functions. Not
               only does this make for a convenient API but it also means that your
               view functions can be synchronous code and still benefit from

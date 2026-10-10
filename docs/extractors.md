@@ -6,9 +6,9 @@ import CodeBlock from "@site/src/components/code_block.js";
 
 # Type-safe information extraction
 
-Ntex provides a facility for type-safe request information access called _extractors_ (i.e., `impl FromRequest`). There are lots of built-in extractor implementations (see [implementors](https://docs.rs/ntex/latest/ntex/web/trait.FromRequest.html#implementors)).
+ntex provides a facility for type-safe request information access called _extractors_ (i.e., `impl FromRequest`). There are lots of built-in extractor implementations (see [implementors](https://docs.rs/ntex/latest/ntex/web/trait.FromRequest.html#implementors)).
 
-An extractor can be accessed as an argument to a handler function. Ntex supports up to 16 extractors per handler function. Argument position does not matter.
+An extractor can be accessed as an argument to a handler function. ntex supports up to 16 extractors per handler function. Argument position does not matter.
 
 <CodeBlock example="extractors" file="main.rs" section="option-one" />
 
@@ -56,7 +56,7 @@ A URL-encoded form body can be extracted to a struct, much like `Json<T>`. This 
 
 ## Other
 
-Ntex also provides many other extractors, here's a few important ones:
+ntex also provides many other extractors, here's a few important ones:
 
 - [`HttpRequest`][httprequest] - `HttpRequest` is itself an extractor, in case you need access to other parts of the request.
 - `String` - You can convert a request's payload to a `String`. [_An example_][stringexample] is available in the rustdoc.
@@ -77,7 +77,7 @@ Although this handler will work, `state.count` will only count the number of req
 
 **Note**: If you want the _entire_ state to be shared across all threads, create it outside of the state factory as described in [Shared Mutable State][shared_mutable_state].
 
-Be careful when using blocking synchronization primitives like `Mutex` or `RwLock` within your app state. Ntex handles requests asynchronously. It is a problem if the [_critical section_][critical_section] in your handler is too big or contains an `.await` point. If this is a concern, we would advise you to also read [Tokio's advice on using blocking `Mutex` in async code][tokio_std_mutex].
+Be careful when using blocking synchronization primitives like `Mutex` or `RwLock` within your app state. ntex handles requests asynchronously. It is a problem if the [_critical section_][critical_section] in your handler is too big or contains an `.await` point. If this is a concern, we would advise you to also read [Tokio's advice on using blocking `Mutex` in async code][tokio_std_mutex].
 
 [pathstruct]: https://docs.rs/ntex/latest/ntex/web/types/struct.Path.html
 [querystruct]: https://docs.rs/ntex/latest/ntex/web/types/struct.Query.html

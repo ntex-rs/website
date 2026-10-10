@@ -6,10 +6,9 @@ import CodeBlock from "@site/src/components/code_block.js";
 
 # Websockets
 
-Ntex supports WebSockets out of the box. The [`web::ws::start()`][wsstart] function performs the websocket handshake, sends the handshake response and runs a websocket service until the connection is closed. A websocket service is a regular ntex [_Service_][service] that accepts [_ws::Frame_][frame] and optionally returns a [_ws::Message_][message] response. The service state is a [_ws::WsSink_][wssink], which can be used to send messages to the peer at any time. The handler that calls `start()` writes the response itself, so it returns `()`.
+ntex supports WebSockets out of the box. The [`web::ws::start()`][wsstart] function performs the websocket handshake, sends the handshake response and runs a websocket service until the connection is closed. A websocket service is a regular ntex [_Service_][service] that accepts [_ws::Frame_][frame] and optionally returns a [_ws::Message_][message] response. The service state is a [_ws::WsSink_][wssink], which can be used to send messages to the peer at any time. The handler that calls `start()` writes the response itself, so it returns `()`.
 
 The following is an example of a simple websocket echo server:
-
 
 <CodeBlock example="websockets" file="main.rs" section="websockets" />
 

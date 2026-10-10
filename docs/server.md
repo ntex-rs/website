@@ -54,7 +54,7 @@ The same limitation applies to extractors as well. When a handler function recei
 
 ## TLS / HTTPS
 
-Ntex supports two TLS implementations out-of-the-box: `rustls` and `openssl`.
+ntex supports two TLS implementations out-of-the-box: `rustls` and `openssl`.
 
 The `rustls` crate feature is for `rustls` integration and `openssl` is for `openssl` integration.
 
@@ -84,7 +84,7 @@ $ openssl rsa -in key.pem -out nopass.pem
 
 ## Keep-Alive
 
-Ntex keeps connections open to wait for subsequent requests.
+ntex keeps connections open to wait for subsequent requests.
 
 > _keep alive_ connection behavior is defined by the [`HttpServiceConfig`][httpserviceconfig] settings, passed to `bind()` as part of the `SharedCfg`.
 

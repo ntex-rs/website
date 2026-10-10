@@ -1,14 +1,14 @@
 ---
 title: Welcome
-description: Guiding you through building web apps with Ntex
+description: Guiding you through building web apps with ntex
 slug: /
 ---
 
-# Welcome to Ntex
+# Welcome to ntex
 
-Ntex lets you quickly and confidently develop web services in Rust and this guide will get you going in no time.
+ntex lets you quickly and confidently develop web services in Rust and this guide will get you going in no time.
 
-The documentation on this website focusses primarily on the Ntex Web framework.<br />
+The documentation on this website focusses primarily on the ntex Web framework.<br />
 Otherwise, head on to the [getting started guide][getting-started].<br />
 If you already know your way around and you need specific information you might want to read the [ntex API docs][ntex-docs].
 

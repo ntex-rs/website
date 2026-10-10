@@ -6,7 +6,7 @@ import CodeBlock from "@site/src/components/code_block.js";
 
 # Middleware
 
-Ntex's middleware system allows us to add additional behavior to request/response processing. Middleware can hook into an incoming request process, enabling us to modify requests as well as halt request processing to return a response early.
+ntex's middleware system allows us to add additional behavior to request/response processing. Middleware can hook into an incoming request process, enabling us to modify requests as well as halt request processing to return a response early.
 
 Middleware can also hook into response processing.
 
@@ -23,7 +23,7 @@ The following demonstrates creating a simple middleware:
 
 <CodeBlock example="middleware" file="main.rs" section="simple" />
 
-> Ntex provides several useful middleware, such as _logging_, _user sessions_, _compress_, etc.
+> ntex provides several useful middleware, such as _logging_, _user sessions_, _compress_, etc.
 
 **Note: middleware runs in registration order for the request and in reverse order for the response. The first registered middleware receives the request first and the response last.**
 
@@ -73,7 +73,7 @@ To set default response headers, the `DefaultHeaders` middleware can be used. Th
 
 ## User sessions
 
-Ntex provides a general solution for session management. The [**ntex-session**][ntexsession] middleware can use multiple backend types to store session data.
+ntex provides a general solution for session management. The [**ntex-session**][ntexsession] middleware can use multiple backend types to store session data.
 
 > By default, only cookie session backend is implemented. Other backend implementations can be added.
 

@@ -29,7 +29,7 @@ async fn main() -> std::io::Result<()> {
         // state factory, called once for each worker
         async || {
             Ok(AppState {
-                app_name: String::from("Ntex"),
+                app_name: String::from("ntex"),
             })
         },
         async |_| web::App::new().route("/", web::get().to_with_state(index)),

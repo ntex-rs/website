@@ -6,7 +6,7 @@ import CodeBlock from "@site/src/components/code_block.js";
 
 # Testing
 
-Every application should be well tested. Ntex provides tools to perform unit and integration tests.
+Every application should be well tested. ntex provides tools to perform unit and integration tests.
 
 ## Unit Tests
 
@@ -16,7 +16,7 @@ For unit testing, ntex provides a request builder type. [_TestRequest_][testrequ
 
 ## Integration tests
 
-There are a few methods for testing your application. Ntex can be used to run the application with specific handlers in a real HTTP server.
+There are a few methods for testing your application. ntex can be used to run the application with specific handlers in a real HTTP server.
 
 `TestRequest::get()`, `TestRequest::post()` and other methods can be used to send requests to the test server.
 

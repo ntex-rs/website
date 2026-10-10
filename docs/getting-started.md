@@ -11,7 +11,7 @@ import { rustVersion, ntexMajorVersion } from "@site/vars";
 If you don't have Rust yet, we recommend you use `rustup` to manage your Rust installation. The [official rust guide][rustguide] has a wonderful section on getting started.
 
 <p>
-Ntex currently has a minimum supported Rust version (MSRV) of { rustVersion }. Running <code>rustup update</code> will ensure you have the latest and greatest Rust version available. As such, this guide assumes you are running Rust { rustVersion } or later.
+ntex currently has a minimum supported Rust version (MSRV) of { rustVersion }. Running <code>rustup update</code> will ensure you have the latest and greatest Rust version available. As such, this guide assumes you are running Rust { rustVersion } or later.
 </p>
 
 ## Hello, world!

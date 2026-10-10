@@ -1,15 +1,18 @@
 const path = require('path');
 
+const repo = process.env.GITHUB_REPOSITORY || 'ntex-rs/website';
+const [organizationName = 'ntex-rs', projectName = 'website'] = repo.split('/');
+
 module.exports = {
   title: 'Ntex',
   tagline: 'Ntex is a powerful, pragmatic, and extremely fast framework for composable networking services for Rust',
-  url: 'https://ntex.rs',
-  baseUrl: '/',
+  url: process.env.DOCUSAURUS_URL || 'https://ntex.rs',
+  baseUrl: process.env.DOCUSAURUS_BASE_URL || '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/ntex-icon.png',
-  organizationName: 'ntex', // Usually your GitHub org/user name.
-  projectName: 'ntex', // Usually your repo name.
+  organizationName: process.env.DOCUSAURUS_ORGANIZATION || organizationName,
+  projectName: process.env.DOCUSAURUS_PROJECT || projectName,
   themeConfig: {
     navbar: {
       title: 'Ntex',

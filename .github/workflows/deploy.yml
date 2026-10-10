@@ -1,32 +1,58 @@
-name: Deploy
+name: Deploy to GitHub Pages
 
 on:
-  workflow_run:
-    workflows: ["Build and publish Docker image"]
-    types:
-      - completed
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Install nanocl cli
-      run: |
-        wget https://github.com/next-hat/nanocl/releases/download/nanocl-0.16.1-nightly/nanocl_0.16.1_amd64.deb
-        sudo dpkg -i nanocl_0.16.1_amd64.deb
-        rm nanocl_0.16.1_amd64.deb
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
 
-    - name: Deploy to production
-      run: |
-        VERSION=$(jq -r '.version' package.json)
-        nanocl version
-        echo $VERSION
-        nanocl state apply -ys Statefile.yml -- --version $VERSION
-      env:
-        HOST: ${{ secrets.NANOCL_HOST }}
-        CERT: ${{ secrets.NANOCL_CERT }}
-        CERT_KEY: ${{ secrets.NANOCL_CERT_KEY }}
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build website
+        env:
+          DOCUSAURUS_URL: https://ntex-rs.github.io
+          DOCUSAURUS_BASE_URL: /website/
+        run: npm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

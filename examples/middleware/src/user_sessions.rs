@@ -7,7 +7,7 @@ use ntex_session::{CookieSession, Session};
 
 /// simple index handler with session
 #[web::get("/")]
-async fn index(session: Session, req: web::HttpRequest) -> Result<&'static str, web::Error> {
+async fn index(session: Session, req: web::HttpRequest) -> Result<&'static str, web::error::JsonError> {
     println!("{:?}", req);
 
     // RequestSession trait is used for session access
@@ -29,15 +29,15 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
     println!("Starting http server: 127.0.0.1:8080");
 
-    web::server(async || {
+    web::server(async |_| {
         web::App::new()
             // enable logger
-            .wrap(Logger::default())
+            .middleware(Logger::default())
             // cookie session middleware
-            .wrap(CookieSession::signed(&[0; 32]).secure(false))
+            .middleware(CookieSession::signed(&[0; 32]).secure(false))
             .service(index)
     })
-    .bind("127.0.0.1:8080")?
+    .bind("127.0.0.1:8080", ntex::SharedCfg::default())?
     .run()
     .await
 }

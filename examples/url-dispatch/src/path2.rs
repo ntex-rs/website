@@ -1,5 +1,6 @@
 // <path>
 use ntex::web;
+use std::convert::Infallible;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -9,14 +10,14 @@ struct Info {
 
 // extract path info using serde
 #[web::get("/{username}/index.html")] // <- define path parameters
-async fn index(info: web::types::Path<Info>) -> Result<String, web::Error> {
+async fn index(info: web::types::Path<Info>) -> Result<String, Infallible> {
     Ok(format!("Welcome {}!", info.username))
 }
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(async || web::App::new().service(index))
-        .bind(("127.0.0.1", 8080))?
+    web::HttpServer::new(async |_| web::App::new().service(index))
+        .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
         .run()
         .await
 }

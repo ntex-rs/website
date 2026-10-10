@@ -20,13 +20,13 @@ There are a few methods for testing your application. Ntex can be used to run th
 
 `TestRequest::get()`, `TestRequest::post()` and other methods can be used to send requests to the test server.
 
-To create a `Service` for testing, use the `test::init_service` method which accepts a regular `App` builder.
+To create a `Service` for testing, use the `test::init_service` method which accepts a regular `App` builder. Use `test::init_service_st` for applications with state, it accepts application state and `App` builder.
 
 > Check the [API documentation][ntexdocs] for more information.
 
 <CodeBlock example="testing" file="integration_one.rs" section="integration-one" />
 
-If you need more complex application configuration, testing should be very similar to creating the normal application. For example, you may need to initialize application state. Create an `App` with a `data` method and attach state just like you would from a normal application.
+If you need more complex application configuration, testing should be very similar to creating the normal application. For example, you may need to initialize application state. Pass the state to `test::init_service_st` and register handlers with `to_with_state` just like you would from a normal application.
 
 <CodeBlock example="testing" file="integration_two.rs" section="integration-two" />
 

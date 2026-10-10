@@ -8,9 +8,17 @@ import CodeBlock from "@site/src/components/code_block.js";
 
 A request handler is an async function that accepts zero or more parameters that can be extracted from a request (i.e., [_impl FromRequest_][implfromrequest]) and returns a type that can be converted into an HttpResponse (i.e., [_impl Responder_][respondertrait]).
 
-Request handling happens in two stages. First the handler object is called, returning any object that implements the [_Responder_][respondertrait] trait. Then, `respond_to()` is called on the returned object, converting itself to a `HttpResponse` or `Error`.
+Request handling happens in two stages. First the handler object is called, returning any object that implements the [_Responder_][respondertrait] trait. Then, `respond_to()` is called on the returned object, converting itself to a `HttpResponse`.
 
-By default ntex provides `Responder` implementations for some standard types, such as `&'static str`, `String`, etc.
+By default ntex provides `Responder` implementations for some standard types, such as `&'static str`, `String`, `Bytes`, `Option<T>`, `Result<T, E>`, etc.
+
+Handlers registered with `to()` only use extractors. Handlers registered with `to_with_state()` also receive a reference to the application state and the request state as their first two arguments:
+
+```rust
+async fn index(state: &AppState, _: (), req: HttpRequest) -> String {
+    format!("Hello {}!", state.app_name)
+}
+```
 
 > For a complete list of implementations, check the [_Responder documentation_][responderimpls].
 
@@ -32,19 +40,21 @@ You can also change the signature to return `impl Responder` which works well if
 
 ```rust
 async fn index(_req: HttpRequest) -> impl Responder {
-    web::Bytes::from_static(b"Hello world!")
+    ntex::util::Bytes::from_static(b"Hello world!")
 }
 ```
 
+Handlers that return an error type must use a `Result`, where the error implements [_WebResponseError_][webresponseerror]:
+
 ```rust
-async fn index(req: HttpRequest) -> Box<Future<Item=HttpResponse, Error=Error>> {
-    ...
+async fn index(_req: HttpRequest) -> Result<String, std::io::Error> {
+    Ok(std::fs::read_to_string("index.html")?)
 }
 ```
 
 ## Streaming response body
 
-Response body can be generated asynchronously. In this case, body must implement the stream trait `Stream<Item=Bytes, Error=Error>`, i.e.:
+Response body can be generated asynchronously. In this case, body must implement the stream trait `Stream<Item = Result<Bytes, E>>`, where `E` implements `std::error::Error`, i.e.:
 
 <CodeBlock example="async-handlers" file="stream.rs" section="stream" />
 
@@ -60,3 +70,4 @@ For this case, the [Either][either] type can be used. `Either` allows combining 
 [respondertrait]: https://docs.rs/ntex/latest/ntex/web/trait.Responder.html
 [responderimpls]: https://docs.rs/ntex/latest/ntex/web/trait.Responder.html#foreign-impls
 [either]: https://docs.rs/ntex/latest/ntex/util/enum.Either.html
+[webresponseerror]: https://docs.rs/ntex/latest/ntex/web/error/trait.WebResponseError.html

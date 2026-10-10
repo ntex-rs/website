@@ -15,7 +15,7 @@ struct MyError {
 }
 
 // Use default implementation for `error_response()` method
-impl web::error::WebResponseError for MyError {}
+impl<St> web::error::WebResponseError<St, web::DefaultError> for MyError {}
 
 async fn index() -> Result<&'static str, MyError> {
     Err(MyError { name: "test" })
@@ -24,8 +24,8 @@ async fn index() -> Result<&'static str, MyError> {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(async || web::App::new().route("/", web::get().to(index)))
-        .bind(("127.0.0.1", 8080))?
+    web::HttpServer::new(async |_| web::App::new().route("/", web::get().to(index)))
+        .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
         .run()
         .await
 }

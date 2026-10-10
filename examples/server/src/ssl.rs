@@ -21,8 +21,8 @@ async fn main() -> std::io::Result<()> {
         .unwrap();
     builder.set_certificate_chain_file("cert.pem").unwrap();
 
-    web::HttpServer::new(async || web::App::new().service(index))
-        .bind_openssl("127.0.0.1:8080", builder)?
+    web::HttpServer::new(async |_| web::App::new().service(index))
+        .bind_openssl("127.0.0.1:8080", builder, ntex::SharedCfg::default())?
         .run()
         .await
 }

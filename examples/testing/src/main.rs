@@ -14,7 +14,7 @@ async fn index(req: web::HttpRequest) -> web::HttpResponse {
 }
 
 fn main() {
-    web::App::new().route("/", web::get().to(index));
+    let _app = web::App::default().route("/", web::get().to(index));
 }
 
 // <unit-tests>

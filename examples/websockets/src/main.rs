@@ -1,96 +1,83 @@
 // <websockets>
-use std::{cell::RefCell, io, rc::Rc, time::Duration, time::Instant};
+use std::{cell::Cell, io, rc::Rc, time::Duration, time::Instant};
 
-use futures::future::{ready, select, Either};
-use ntex::service::{fn_factory_with_config, fn_shutdown, Service};
+use futures::future::{select, Either};
 use ntex::util::Bytes;
-use ntex::web;
-use ntex::{chain, fn_service};
-use ntex::{channel::oneshot, rt, time};
+use ntex::web::{self, ws};
+use ntex::{rt, time, Ctx, Service};
 
 /// How often heartbeat pings are sent
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
 /// How long before lack of client response causes a timeout
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 
-struct WsState {
+/// WebSockets service, websocket sink is the service state
+struct WsService {
     /// Client must send ping at least once per 10 seconds (CLIENT_TIMEOUT),
     /// otherwise we drop connection.
-    hb: Instant,
+    hb: Rc<Cell<Instant>>,
+    /// Heartbeat task is started
+    started: Cell<bool>,
 }
 
-/// WebSockets service factory
-async fn ws_service(
-    sink: web::ws::WsSink,
-) -> Result<
-    impl Service<web::ws::Frame, Response = Option<web::ws::Message>, Error = io::Error>,
-    web::Error,
-> {
-    let state = Rc::new(RefCell::new(WsState { hb: Instant::now() }));
+impl Service<ws::WsSink, ws::Frame> for WsService {
+    type Res = Option<ws::Message>;
+    type Error = io::Error;
 
-    // disconnect notification
-    let (tx, rx) = oneshot::channel();
+    async fn ready(&self, ctx: Ctx<'_, Self, ws::WsSink>) -> Result<(), Self::Error> {
+        // start heartbeat task, `ctx.st()` is the websocket sink
+        if !self.started.replace(true) {
+            rt::spawn(heartbeat(self.hb.clone(), ctx.st().clone()));
+        }
+        Ok(())
+    }
 
-    // start heartbeat task
-    rt::spawn(heartbeat(state.clone(), sink, rx));
-
-    // handler service for incoming websockets frames
-    let service = fn_service(move |frame| {
+    // handle incoming websockets frames
+    async fn call(
+        &self,
+        frame: ws::Frame,
+        _: Ctx<'_, Self, ws::WsSink>,
+    ) -> Result<Self::Res, Self::Error> {
         let item = match frame {
             // update heartbeat
-            web::ws::Frame::Ping(msg) => {
-                state.borrow_mut().hb = Instant::now();
-                Some(web::ws::Message::Pong(msg))
+            ws::Frame::Ping(msg) => {
+                self.hb.set(Instant::now());
+                Some(ws::Message::Pong(msg))
             }
             // update heartbeat
-            web::ws::Frame::Pong(_) => {
-                state.borrow_mut().hb = Instant::now();
+            ws::Frame::Pong(_) => {
+                self.hb.set(Instant::now());
                 None
             }
             // send message back
-            web::ws::Frame::Text(text) => Some(web::ws::Message::Text(
-                String::from_utf8(Vec::from(text.as_ref())).unwrap().into(),
+            ws::Frame::Text(text) => Some(ws::Message::Text(
+                String::from_utf8_lossy(&text).as_ref().into(),
             )),
-            web::ws::Frame::Binary(bin) => Some(web::ws::Message::Binary(bin)),
+            ws::Frame::Binary(bin) => Some(ws::Message::Binary(bin)),
             // close connection
-            web::ws::Frame::Close(reason) => Some(web::ws::Message::Close(reason)),
+            ws::Frame::Close(reason) => Some(ws::Message::Close(reason)),
             // ignore other frames
             _ => None,
         };
-        ready(Ok(item))
-    });
-
-    // handler service for shutdown notification that stop heartbeat task
-    let on_shutdown = fn_shutdown(async move || {
-        let _ = tx.send(());
-    });
-
-    // pipe our service with on_shutdown callback
-    Ok(chain(service).and_then(on_shutdown))
+        Ok(item)
+    }
 }
 
 /// helper method that sends ping to client every heartbeat interval
-async fn heartbeat(
-    state: Rc<RefCell<WsState>>,
-    sink: web::ws::WsSink,
-    mut rx: oneshot::Receiver<()>,
-) {
+async fn heartbeat(hb: Rc<Cell<Instant>>, sink: ws::WsSink) {
     loop {
-        match select(Box::pin(time::sleep(HEARTBEAT_INTERVAL)), &mut rx).await {
+        match select(Box::pin(time::sleep(HEARTBEAT_INTERVAL)), sink.on_disconnect()).await {
             Either::Left(_) => {
                 // check client heartbeats
-                if Instant::now().duration_since(state.borrow().hb) > CLIENT_TIMEOUT {
+                if Instant::now().duration_since(hb.get()) > CLIENT_TIMEOUT {
                     // heartbeat timed out
                     println!("Websocket Client heartbeat failed, disconnecting!");
+                    sink.io().close();
                     return;
                 }
 
                 // send ping
-                if sink
-                    .send(web::ws::Message::Ping(Bytes::default()))
-                    .await
-                    .is_err()
-                {
+                if sink.send(ws::Message::Ping(Bytes::default())).await.is_err() {
                     return;
                 }
             }
@@ -103,22 +90,29 @@ async fn heartbeat(
 }
 
 /// do websocket handshake and start web sockets service
-async fn ws_index(req: web::HttpRequest) -> Result<web::HttpResponse, web::Error> {
+async fn ws_index(req: web::HttpRequest) {
     // iterate over subprotocols requested by the client in the `Sec-Websocket-Protocol`
     // header and negotiate a chosen subprotocol as per the RFC 6455 Section 1.9
-    let chosen: Option<String> = web::ws::subprotocols(&req)
-        .find(|p| *p == "my-subprotocol")
-        .map(String::from);
+    let chosen = ws::subprotocols(&req).find(|p| *p == "my-subprotocol");
 
     // or simply ignore subprotocols and do not send `Sec-Websocket-Protocol` header in upgrade response
-    // let chosen = None::<&str>;
+    // let chosen = None;
 
-    web::ws::start(req, chosen, fn_factory_with_config(ws_service)).await
+    let service = WsService {
+        hb: Rc::new(Cell::new(Instant::now())),
+        started: Cell::new(false),
+    };
+
+    // `start` sends the handshake response and runs the websocket
+    // service until the connection is closed
+    if let Err(err) = ws::start(&req, chosen, service).await {
+        println!("WebSocket error: {:?}", err);
+    }
 }
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::server(async || {
+    web::server(async |_| {
         web::App::new()
             // enable logger
             .middleware(web::middleware::Logger::default())
@@ -126,7 +120,7 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("/ws/").route(web::get().to(ws_index)))
     })
     // start http server on 127.0.0.1:8080
-    .bind("127.0.0.1:8080")?
+    .bind("127.0.0.1:8080", ntex::SharedCfg::default())?
     .run()
     .await
 }

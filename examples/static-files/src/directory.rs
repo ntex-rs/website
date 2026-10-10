@@ -4,10 +4,10 @@ use ntex_files as fs;
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(async || {
+    web::HttpServer::new(async |_| {
         web::App::new().service(fs::Files::new("/static", ".").show_files_listing())
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
     .run()
     .await
 }

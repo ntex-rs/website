@@ -35,12 +35,12 @@ async fn index() -> web::HttpResponse {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(async || {
+    web::HttpServer::new(async |_| {
         web::App::new()
             .route("/", web::get().to(index))
             .route("/event", web::post().to(capture_event))
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
     .run()
     .await
 }

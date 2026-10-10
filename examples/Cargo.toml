@@ -23,8 +23,3 @@ members = [
   "websockets",
 ]
 
-
-[patch.crates-io]
-ntex-multipart = { git = "https://github.com/ntex-rs/ntex-extras.git" }
-ntex-session = { git = "https://github.com/ntex-rs/ntex-extras.git" }
-ntex-files = { git = "https://github.com/ntex-rs/ntex-extras.git" }

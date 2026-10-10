@@ -22,35 +22,31 @@ In this example, an application with the `/app` prefix and an `index.html` resou
 
 ## State
 
-Application state is shared with all routes and resources within the same scope. State can be accessed with the [`web::types::State<T>`][state] extractor where `T` is the type of the state. State is also accessible for middleware.
+An application has a single state type. The state type must implement the [`web::State`][state] trait, which also defines the application's error domain (usually [`web::DefaultError`][defaulterror]). Handlers registered with [`Route::to_with_state()`][towithstate] receive a reference to the application state and the request state as their first two arguments, followed by any number of extractors. State is also passed to middleware and to error renderers.
 
 Let's write a simple application and store the application name in the state:
 
 <CodeBlock example="application" file="state.rs" section="setup" />
 
-Next, pass in the state when initializing the App and start the application:
+Next, start the server with [`web::server_with_config()`][serverwithconfig]. The first closure is the state factory and the second one is the application factory:
 
 <CodeBlock example="application" file="state.rs" section="start_app" />
 
-Any number of state types could be registered within the application.
-
 ## Shared Mutable State
 
-`HttpServer` accepts an application factory rather than an application instance. An `HttpServer` constructs an application instance for each thread. Therefore, application data must be constructed multiple times. If you want to share data between different threads, a shareable object should be used, e.g. `Send` + `Sync`.
-
-Internally, [`web::types::State`][state] uses `Arc`. So in order to avoid creating two `Arc`s, we should create our data before registering it using [`App::state()`][appstate].
+`HttpServer` accepts a state factory and an application factory rather than instances. The server calls the state factory once for each worker thread, so each worker owns its own state value. Per-worker state does not have to be `Send` or `Sync`, `Rc<Cell<T>>` works fine. If you want to share data between different threads, a shareable object should be used, e.g. `Arc<Mutex<T>>`.
 
 In the following example, we will write an application with mutable, shared state. First, we define our state and create our handler:
 
 <CodeBlock example="application" file="mutable_state.rs" section="setup_mutable" />
 
-and register the data in an `App`:
+and create the state for each worker:
 
 <CodeBlock example="application" file="mutable_state.rs" section="make_app_mutable" />
 
 Key takeaways:
-- State initialized _inside_ the closure passed to `HttpServer::new` is local to the worker thread and may become de-synced if modified.
-- To achieve _globally shared state_, it must be created **outside** of the closure passed to `HttpServer::new` and moved/cloned in.
+- State initialized _inside_ the state factory is local to the worker thread and may become de-synced if modified.
+- To achieve _globally shared state_, it must be created **outside** of the state factory and moved/cloned in.
 
 ## Using an Application Scope to Compose Applications
 
@@ -84,7 +80,7 @@ The result of the above example would be:
 /api/test -> "test"
 ```
 
-Each [`ServiceConfig`][serviceconfig] can have its own `state`, `routes`, and `services`.
+Each [`ServiceConfig`][serviceconfig] can have its own `routes`, `services` and `external resources`.
 
 <!-- LINKS -->
 
@@ -93,10 +89,12 @@ Each [`ServiceConfig`][serviceconfig] can have its own `state`, `routes`, and `s
 [guardtrait]: https://docs.rs/ntex/latest/ntex/web/guard/trait.Guard.html
 [guardfuncs]: https://docs.rs/ntex/latest/ntex/web/guard/index.html#functions
 [guardheader]: https://docs.rs/ntex/latest/ntex/web/guard/fn.Header.html
-[state]: https://docs.rs/ntex/latest/ntex/web/types/struct.State.html
+[state]: https://docs.rs/ntex/latest/ntex/web/trait.State.html
+[defaulterror]: https://docs.rs/ntex/latest/ntex/web/error/struct.DefaultError.html
+[towithstate]: https://docs.rs/ntex/latest/ntex/web/struct.Route.html#method.to_with_state
+[serverwithconfig]: https://docs.rs/ntex/latest/ntex/web/fn.server_with_config.html
 [app]: https://docs.rs/ntex/latest/ntex/web/struct.App.html
 [appconfig]: https://docs.rs/ntex/latest/ntex/web/struct.App.html#method.configure
-[appstate]: https://docs.rs/ntex/latest/ntex/web/struct.App.html#method.app_data
 [scope]: https://docs.rs/ntex/latest/ntex/web/struct.Scope.html
 [webscopeconfig]: https://docs.rs/ntex/latest/ntex/web/struct.Scope.html#method.configure
 [webscope]: https://docs.rs/ntex/latest/ntex/web/fn.scope.html

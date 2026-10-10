@@ -1,37 +1,44 @@
 pub mod handlers_arc;
 // <data>
 use ntex::web;
-use std::cell::Cell;
+use std::{cell::Cell, rc::Rc};
 
 #[derive(Clone)]
 struct AppState {
-    count: Cell<usize>,
+    count: Rc<Cell<usize>>,
 }
 
-async fn show_count(data: web::types::State<AppState>) -> impl web::Responder {
-    format!("count: {}", data.count.get())
+impl web::State for AppState {
+    type Error = web::DefaultError;
 }
 
-async fn add_one(data: web::types::State<AppState>) -> impl web::Responder {
-    let count = data.count.get();
-    data.count.set(count + 1);
+async fn show_count(state: &AppState, _: ()) -> String {
+    format!("count: {}", state.count.get())
+}
 
-    format!("count: {}", data.count.get())
+async fn add_one(state: &AppState, _: ()) -> String {
+    let count = state.count.get();
+    state.count.set(count + 1);
+
+    format!("count: {}", state.count.get())
 }
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    let data = AppState {
-        count: Cell::new(0),
-    };
-
-    web::HttpServer::new(async move || {
-        web::App::new()
-            .state(data.clone())
-            .route("/", web::to(show_count))
-            .route("/add", web::to(add_one))
-    })
-    .bind(("127.0.0.1", 8080))?
+    web::server_with_config(
+        // state is created once per worker thread
+        async || {
+            Ok(AppState {
+                count: Rc::new(Cell::new(0)),
+            })
+        },
+        async |_| {
+            web::App::new()
+                .route("/", web::route().to_with_state(show_count))
+                .route("/add", web::route().to_with_state(add_one))
+        },
+    )
+    .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
     .run()
     .await
 }

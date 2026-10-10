@@ -6,7 +6,7 @@ use ntex::web;
 async fn index(_req: web::HttpRequest) -> web::HttpResponse {
     let mut resp = web::HttpResponse::Ok()
         .force_close() // <- Close connection on HttpResponseBuilder
-        .finish();
+        .build();
 
     // Alternatively close connection on the HttpResponse struct
     resp.head_mut()

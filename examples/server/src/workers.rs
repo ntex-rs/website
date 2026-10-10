@@ -3,10 +3,10 @@ use ntex::web;
 
 #[ntex::main]
 async fn main() {
-    web::HttpServer::new(async || {
+    let _server = web::HttpServer::new(async |_| {
         web::App::new().route(
             "/",
-            web::get().to(|| async { web::HttpResponse::Ok().finish() }),
+            web::get().to(|| async { web::HttpResponse::Ok().build() }),
         )
     })
     .workers(4);

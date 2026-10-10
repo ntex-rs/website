@@ -40,9 +40,8 @@ In the following example, we will deserialize a _MyObj_ struct. We need to load 
 
 ## Content Encoding
 
-Ntex automatically _decompresses_ payloads. The following codecs are supported:
+Ntex automatically _decompresses_ payloads, if the `compress` crate feature is enabled. The following codecs are supported:
 
-- Brotli
 - Gzip
 - Deflate
 - Zstd
@@ -51,7 +50,7 @@ If request headers contain a `Content-Encoding` header, the request payload is d
 
 ## Chunked transfer encoding
 
-Ntex automatically decodes _chunked_ encoding. The [`web::Payload`][payloadextractor] extractor already contains the decoded byte stream. If the request payload is compressed with one of the supported compression codecs (br, gzip, deflate), then the byte stream is decompressed.
+Ntex automatically decodes _chunked_ encoding. The [`web::types::Payload`][payloadextractor] extractor already contains the decoded byte stream. If the request payload is compressed with one of the supported compression codecs (gzip, deflate, zstd), then the byte stream is decompressed.
 
 ## Multipart body
 
@@ -63,18 +62,17 @@ Ntex provides multipart stream support with an external crate, [`ntex-multipart`
 
 Ntex provides support for _application/x-www-form-urlencoded_ encoded bodies with the [`web::Form`][formencoded] extractor which resolves to the deserialized instance. The type of the instance must implement the `Deserialize` trait from _serde_.
 
-The _UrlEncoded_ future can resolve into an error in several cases:
+The _Form_ extractor can resolve into an error in several cases:
 
 - content type is not `application/x-www-form-urlencoded`
-- transfer encoding is `chunked`.
-- content-length is greater than 256k
+- payload size is greater than the limit, 16k by default (configurable with [`FormConfig`][formconfig])
 - payload terminates with error.
 
 <CodeBlock example="requests" file="urlencoded.rs" section="urlencoded" />
 
 ## Streaming request
 
-_HttpRequest_ is a stream of `Bytes` objects. It can be used to read the request body payload.
+The [`web::types::Payload`][payloadextractor] extractor is a stream of `Bytes` objects. It can be used to read the request body payload.
 
 In the following example, we read and print the request payload chunk by chunk:
 
@@ -87,3 +85,4 @@ In the following example, we read and print the request payload chunk by chunk:
 [payloadextractor]: https://docs.rs/ntex/latest/ntex/web/types/struct.Payload.html
 [multipartcrate]: https://github.com/ntex-rs/ntex-extras/tree/master/ntex-multipart
 [formencoded]: https://docs.rs/ntex/latest/ntex/web/types/struct.Form.html
+[formconfig]: https://docs.rs/ntex/latest/ntex/web/types/struct.FormConfig.html

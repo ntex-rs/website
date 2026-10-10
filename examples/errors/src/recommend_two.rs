@@ -9,13 +9,15 @@ enum UserError {
     InternalError,
 }
 
-impl web::error::WebResponseError for UserError {
-    fn error_response(&self, _: &web::HttpRequest) -> web::HttpResponse {
-        web::HttpResponse::build(self.status_code())
+impl<St> web::error::WebResponseError<St, web::DefaultError> for UserError {
+    fn error_response(&self, _: &St) -> web::HttpResponse {
+        web::HttpResponse::builder(self.status_code())
             .set_header("content-type", "text/html; charset=utf-8")
             .body(self.to_string())
     }
+}
 
+impl UserError {
     fn status_code(&self) -> http::StatusCode {
         match *self {
             UserError::InternalError => http::StatusCode::INTERNAL_SERVER_ERROR,
@@ -36,8 +38,8 @@ fn do_thing_that_fails() -> Result<(), std::io::Error> {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(async || web::App::new().service(index))
-        .bind(("127.0.0.1", 8080))?
+    web::HttpServer::new(async |_| web::App::new().service(index))
+        .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
         .run()
         .await
 }

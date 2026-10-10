@@ -9,7 +9,7 @@ async fn index() -> impl web::Responder {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(async || {
+    web::HttpServer::new(async |_| {
         web::App::new().service(
             // prefixes all resources and routes attached to it...
             web::scope("/app")
@@ -17,7 +17,7 @@ async fn main() -> std::io::Result<()> {
                 .route("/index.html", web::get().to(index)),
         )
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
     .run()
     .await
 }

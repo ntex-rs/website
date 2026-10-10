@@ -10,7 +10,7 @@ pub struct MyError {
 }
 
 // Use default implementation for `error_response()` method
-impl web::error::WebResponseError for MyError {}
+impl<St> web::error::WebResponseError<St, web::DefaultError> for MyError {}
 
 #[web::get("/")]
 async fn index() -> Result<&'static str, MyError> {
@@ -26,14 +26,14 @@ async fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
     env_logger::init();
 
-    web::HttpServer::new(async || {
+    web::HttpServer::new(async |_| {
         let logger = web::middleware::Logger::default();
 
         web::App::new()
-            .wrap(logger)
+            .middleware(logger)
             .service(index)
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
     .run()
     .await
 }

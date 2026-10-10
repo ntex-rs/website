@@ -16,13 +16,13 @@ Once connection accepted Application level protocol processing happens in a prot
 
 ![](/img/diagrams/connection_accept.svg)
 
-Most of code implementation resides in [`ntex`][server] crate for struct [`Accept`][accept].
+Most of code implementation resides in [`ntex-server`][server] crate for struct [`Accept`][accept].
 
 ## Worker loop in more detail
 
 ![](/img/diagrams/connection_worker.svg)
 
-Most of code implementation resides in [`ntex`][server] crate for struct [`Worker`][worker].
+Most of code implementation resides in [`ntex-server`][server] crate for struct [`Worker`][worker].
 
 ## Request loop roughly
 
@@ -30,9 +30,9 @@ Most of code implementation resides in [`ntex`][server] crate for struct [`Worke
 
 Most of code implementation for request loop resides in [`ntex`][ntex] crates.
 
-[server]: https://crates.io/crates/ntex
+[server]: https://crates.io/crates/ntex-server
 [ntex]: https://crates.io/crates/ntex
 [http]: https://crates.io/crates/ntex
-[accept]: https://github.com/ntex-rs/ntex/blob/master/ntex/src/accept.rs
-[worker]: https://github.com/ntex-rs/ntex/blob/master/ntex/src/worker.rs
-[dispatcher]: https://github.com/ntex-rs/ntex/blob/master/ntex-h1/src/h1/dispatcher.rs
+[accept]: https://github.com/ntex-rs/ntex/blob/master/ntex-server/src/net/accept.rs
+[worker]: https://github.com/ntex-rs/ntex/blob/master/ntex-server/src/wrk.rs
+[dispatcher]: https://github.com/ntex-rs/ntex/blob/master/ntex/src/http/h1/dispatcher.rs

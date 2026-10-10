@@ -17,7 +17,7 @@ Typically, middleware is involved in the following actions:
 - Modify application state
 - Access external services (redis, logging, sessions)
 
-Middleware is registered for each `App`, `scope`, or `Resource` and executed in opposite order as registration. In general, a _middleware_ is a type that implements the [_Service trait_][servicetrait] and [_Transform trait_][middlewaretrait]. Each method in the traits has a default implementation. Each method can return a result immediately or a _future_ object.
+Middleware is registered for each `App`, `scope`, or `Resource` with the `middleware()` method. In general, a _middleware_ is a type that implements the [_Middleware trait_][middlewaretrait], which creates a new service that wraps the inner service. The created service implements the [_Service trait_][servicetrait]. The `Middleware::create()` method receives the application state and the inner service. Errors returned by the inner service are propagated as errors, so the middleware service sees them as `Err` values rather than rendered responses.
 
 The following demonstrates creating a simple middleware:
 
@@ -25,7 +25,7 @@ The following demonstrates creating a simple middleware:
 
 > Ntex provides several useful middleware, such as _logging_, _user sessions_, _compress_, etc.
 
-**Warning: if you use `wrap()` multiple times, the last occurrence will be executed first.**
+**Note: middleware runs in registration order for the request and in reverse order for the response. The first registered middleware receives the request first and the response last.**
 
 ## Logging
 
@@ -103,5 +103,5 @@ You can use the `ErrorHandlers::handler()` method to register a custom error han
 [cookiesession]: https://github.com/ntex-rs/ntex-extras/tree/master/ntex-session
 [ntexsession]: https://github.com/ntex-rs/ntex-extras/tree/master/ntex-session
 [envlogger]: https://docs.rs/env_logger/*/env_logger/
-[servicetrait]: https://docs.rs/ntex/latest/ntex/service/trait.Service.html
-[middlewaretrait]: https://docs.rs/ntex/latest/ntex/service/trait.Middleware.html
+[servicetrait]: https://docs.rs/ntex/latest/ntex/trait.Service.html
+[middlewaretrait]: https://docs.rs/ntex/latest/ntex/trait.Middleware.html

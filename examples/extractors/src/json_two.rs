@@ -16,17 +16,16 @@ async fn index(info: web::types::Json<Info>) -> impl web::Responder {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(async || {
-        let json_config = web::types::JsonConfig::default().limit(4096);
+    web::HttpServer::new(async |_| {
+        // change json extractor configuration
+        let config =
+            web::WebAppConfig::new().set_state(web::types::JsonConfig::default().limit(4096));
 
-        web::App::new().service(
-            web::resource("/")
-                // change json extractor configuration
-                .state(json_config)
-                .route(web::post().to(index)),
-        )
+        web::App::new()
+            .with_config(config)
+            .service(web::resource("/").route(web::post().to(index)))
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
     .run()
     .await
 }

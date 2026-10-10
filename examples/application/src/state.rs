@@ -1,14 +1,23 @@
+#![allow(dead_code)]
+
 // <setup>
 use ntex::web;
 
 // This struct represents state
+#[derive(Clone)]
 struct AppState {
     app_name: String,
 }
 
-#[web::get("/")]
-async fn index(data: web::types::State<AppState>) -> String {
-    let app_name = &data.app_name; // <- get app_name
+// Application state type must implement `web::State` trait
+impl web::State for AppState {
+    type Error = web::DefaultError;
+}
+
+// Handlers registered with `to_with_state()` receive the application state
+// and the request state as their first two arguments
+async fn index(state: &AppState, _: ()) -> String {
+    let app_name = &state.app_name; // <- get app_name
     format!("Hello {app_name}!") // <- response with app_name
 }
 // </setup>
@@ -16,14 +25,16 @@ async fn index(data: web::types::State<AppState>) -> String {
 // <start_app>
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(async || {
-        web::App::new()
-            .state(AppState {
+    web::server_with_config(
+        // state factory, called once for each worker
+        async || {
+            Ok(AppState {
                 app_name: String::from("Ntex"),
             })
-            .service(index)
-    })
-    .bind(("127.0.0.1", 8080))?
+        },
+        async |_| web::App::new().route("/", web::get().to_with_state(index)),
+    )
+    .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
     .run()
     .await
 }

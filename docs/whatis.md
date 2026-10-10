@@ -17,11 +17,12 @@ Ntex have several other implementations such as:
 - [ntex-redis][ntex-redis] A redis client
 - [ntex-mqtt][ntex-mqtt] A MQTT Client/Server framework for v5 and v3.1.1 protocols
 
-Starting ntex v0.5 async runtime must be selected as a feature, the options are:
+Ntex has a native single-threaded runtime. Without an explicit runtime feature it automatically selects a platform I/O reactor: Linux tries `io_uring` and falls back to polling, other Unix platforms use polling, and Windows uses IOCP. Alternative runtimes and native reactors can be selected with Cargo features (enable at most one):
 
-- [Tokio][tokio] is an asynchronous runtime for the Rust programming language. It provides the building blocks needed for writing network applications. It gives the flexibility to target a wide range of systems, from large servers with dozens of cores to small embedded devices. 
-- [Glommio][glommio] is a thread-per-core crate that makes writing highly parallel asynchronous applications in a thread-per-core architecture easier for rustaceans. Powered by DataDog
-- [Async Std][async-std] Async version of the Rust standard library
+- `tokio`: [Tokio][tokio] local runtime and I/O driver.
+- `compio`: [Compio][compio] runtime with completion-based I/O.
+- `neon-polling`: native runtime with the polling reactor on Unix.
+- `neon-uring`: native runtime with `io_uring` on Linux.
 
 <p>
 Most importantly: Ntex runs on Rust { rustVersion } or later and it works with stable releases.
@@ -34,5 +35,4 @@ Most importantly: Ntex runs on Rust { rustVersion } or later and it works with s
 [ntex-redis]: https://github.com/ntex-rs/ntex-redis
 [ntex-mqtt]: https://github.com/ntex-rs/ntex-mqtt
 [tokio]: https://github.com/tokio-rs/tokio
-[glommio]: https://github.com/DataDog/glommio
-[async-std]: https://github.com/async-rs/async-std
+[compio]: https://github.com/compio-rs/compio

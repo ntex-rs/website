@@ -4,14 +4,14 @@ use std::io;
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
-    let srv = web::HttpServer::new(async || {
+    let srv = web::HttpServer::new(async |_| {
         web::App::new().route(
             "/",
-            web::get().to(|| async { web::HttpResponse::Ok().finish() }),
+            web::get().to(|| async { web::HttpResponse::Ok().build() }),
         )
     })
-    .bind(("127.0.0.1", 8080))?
-    .shutdown_timeout(ntex::time::Seconds(60)) // <- Set shutdown timeout to 60 seconds
+    .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
+    .graceful_shutdown_timeout(ntex::time::Seconds(60)) // <- Set shutdown timeout to 60 seconds
     .run();
 
     // pause accepting new connections

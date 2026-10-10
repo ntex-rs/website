@@ -8,7 +8,6 @@ async fn show_users(_req: web::HttpRequest) -> impl web::Responder {
 // <scope>
 #[ntex::main]
 async fn main() {
-    let scope = web::scope("/users").service(show_users);
-    web::App::new().service(scope);
+    let _app = web::App::default().service(web::scope("/users").service(show_users));
 }
 // </scope>

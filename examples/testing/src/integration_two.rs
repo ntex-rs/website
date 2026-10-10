@@ -1,14 +1,18 @@
 use ntex::web;
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 struct AppState {
     count: i32,
 }
 
+impl web::State for AppState {
+    type Error = web::DefaultError;
+}
+
 #[allow(dead_code)]
-async fn index(data: web::types::State<AppState>) -> impl web::Responder {
-    web::HttpResponse::Ok().json(data.get_ref())
+async fn index(state: &AppState, _: ()) -> web::HttpResponse {
+    web::HttpResponse::Ok().json(state)
 }
 
 // <integration-two>
@@ -20,10 +24,9 @@ mod tests {
 
     #[ntex::test]
     async fn test_index_get() {
-        let app = test::init_service(
-            web::App::new()
-                .state(AppState { count: 4 })
-                .route("/", web::get().to(index)),
+        let app = test::init_service_st(
+            AppState { count: 4 },
+            web::App::new().route("/", web::get().to_with_state(index)),
         )
         .await;
         let req = test::TestRequest::get().uri("/").to_request();

@@ -13,8 +13,8 @@ async fn hello(name: web::types::Path<String>) -> impl web::Responder {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(async || web::App::new().service(index).service(hello))
-        .bind(("127.0.0.1", 8080))?
+    web::HttpServer::new(async |_| web::App::new().service(index).service(hello))
+        .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
         .run()
         .await
 }

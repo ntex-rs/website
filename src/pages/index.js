@@ -73,7 +73,7 @@ const Hero = () => {
     <header id="hero" className={clsx('hero', styles.banner)}>
       <div className="container">
         <img
-          src={useBaseUrl(`img/logo.png`)}
+          src={useBaseUrl(`img/ntex-icon.svg`)}
           alt="Ntex Logo"
           className={styles.logo}
         />

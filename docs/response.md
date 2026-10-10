@@ -10,7 +10,7 @@ A builder-like pattern is used to construct an instance of `HttpResponse`. `Http
 
 > Check the [documentation][responsebuilder] for type descriptions.
 
-The methods `.body`, `.finish`, and `.json` finalize response creation and return a constructed _HttpResponse_ instance. If this methods is called on the same builder instance multiple times, the builder will panic.
+The methods `.body`, `.build`, and `.json` finalize response creation and return a constructed _HttpResponse_ instance. If this methods is called on the same builder instance multiple times, the builder will panic.
 
 <CodeBlock example="responses" file="main.rs" section="builder" />
 
@@ -31,9 +31,9 @@ Using the `Json` type this way instead of calling the `.json` method on a `HttpR
 
 ## Content encoding
 
-Ntex can automatically _compress_ payloads with the [_Compress middleware_][compressmidddleware]. The following codecs are supported:
+Ntex can automatically _compress_ payloads with the [_Compress middleware_][compressmidddleware]. Compression requires the `compress` crate feature. The following codecs are supported:
 
-- Brotli
+- Zstd
 - Gzip
 - Deflate
 - Identity

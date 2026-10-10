@@ -1,5 +1,6 @@
 // <json-resp>
 use ntex::web;
+use std::convert::Infallible;
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -8,7 +9,7 @@ struct MyObj {
 }
 
 #[web::get("/a/{name}")]
-async fn index(name: web::types::Path<String>) -> Result<impl web::Responder, web::Error> {
+async fn index(name: web::types::Path<String>) -> Result<impl web::Responder, Infallible> {
     let obj = MyObj {
         name: name.to_string(),
     };
@@ -17,8 +18,8 @@ async fn index(name: web::types::Path<String>) -> Result<impl web::Responder, we
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(async || web::App::new().service(index))
-        .bind(("127.0.0.1", 8080))?
+    web::HttpServer::new(async |_| web::App::new().service(index))
+        .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
         .run()
         .await
 }

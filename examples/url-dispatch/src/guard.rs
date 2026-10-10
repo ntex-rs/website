@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 // <guard>
 use ntex::http;
 use ntex::web;
@@ -12,15 +13,15 @@ impl web::guard::Guard for ContentTypeHeader {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(async || {
+    web::HttpServer::new(async |_| {
         web::App::new().route(
             "/",
             web::route()
                 .guard(ContentTypeHeader)
-                .to(|| async { web::HttpResponse::Ok().finish() }),
+                .to(|| async { web::HttpResponse::Ok().build() }),
         )
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
     .run()
     .await
 }

@@ -10,9 +10,9 @@ import { ntexMajorVersion } from "@site/vars";
 
 The [**HttpServer**][httpserverstruct] type is responsible for serving HTTP requests.
 
-`HttpServer` accepts an application factory as a parameter, and the application factory must have `Send` + `Sync` boundaries. More about that in the _multi-threading_ section.
+`HttpServer` accepts an application factory as a parameter, the application factory is an async closure and must be `Send` + `Clone`. More about that in the _multi-threading_ section. Use [`web::server()`][webserver] or [`web::server_with_config()`][serverwithconfig] (for applications with state) to create a server.
 
-To start the web server it must first be bound to a network socket. Use [`HttpServer::bind()`][bindmethod] with a socket address tuple or string such as `("127.0.0.1", 8080)` or `"0.0.0.0:8080"`. This will fail if the socket is being used by another application.
+To start the web server it must first be bound to a network socket. Use [`HttpServer::bind()`][bindmethod] with a socket address tuple or string such as `("127.0.0.1", 8080)` or `"0.0.0.0:8080"` and a [`SharedCfg`][sharedcfg] configuration. Use `SharedCfg::default()` for the default configuration. This will fail if the socket is being used by another application.
 
 After the `bind` is successful, use [`HttpServer::run()`][httpserver_run] to return a [`Server`][server] instance. The `Server` must be `await`ed or `spawn`ed to start processing requests and will run until it receives a shutdown signal (such as, by default, a `ctrl-c`; [read more here](#graceful-shutdown)).
 
@@ -24,18 +24,18 @@ After the `bind` is successful, use [`HttpServer::run()`][httpserver_run] to ret
 
 <CodeBlock example="server" file="workers.rs" section="workers" />
 
-Once the workers are created, they each receive a separate _application_ instance to handle requests. Application state is not shared between the threads, and handlers are free to manipulate their copy of the state with no concurrency concerns.
+Once the workers are created, they each receive a separate _application_ instance and a separate application state to handle requests. Application state is not shared between the threads, and handlers are free to manipulate their copy of the state with no concurrency concerns.
 
-Application state does not need to be `Send` or `Sync`, but application factories must be `Send` + `Sync`.
+Application state does not need to be `Send` or `Sync`, but application factories must be `Send` + `Clone`.
 
-To share state between worker threads, use an `Arc`/`Data`. Special care should be taken once sharing and synchronization are introduced. In many cases, performance costs are inadvertently introduced as a result of locking the shared state for modifications.
+To share state between worker threads, use an `Arc`. Special care should be taken once sharing and synchronization are introduced. In many cases, performance costs are inadvertently introduced as a result of locking the shared state for modifications.
 
 In some cases these costs can be alleviated using more efficient locking strategies, for example using [read/write locks](https://doc.rust-lang.org/std/sync/struct.RwLock.html) instead of [mutexes](https://doc.rust-lang.org/std/sync/struct.Mutex.html) to achieve non-exclusive locking, but the most performant implementations often tend to be ones in which no locking occurs at all.
 
 Since each worker thread processes its requests sequentially, handlers which block the current thread will cause the current worker to stop processing new requests:
 
 ```rust
-fn my_handler() -> impl Responder {
+async fn my_handler() -> &'static str {
     std::thread::sleep(Duration::from_secs(5)); // <-- Bad practice! Will cause the current worker thread to hang!
     "response"
 }
@@ -44,7 +44,7 @@ fn my_handler() -> impl Responder {
 For this reason, any long, non-cpu-bound operation (e.g. I/O, database operations, etc.) should be expressed as futures or asynchronous functions. Async handlers get executed concurrently by worker threads and thus don't block execution:
 
 ```rust
-async fn my_handler() -> impl Responder {
+async fn my_handler() -> &'static str {
     ntex::time::sleep(ntex::time::Seconds(5)).await; // <-- Ok. Worker thread will handle other requests here
     "response"
 }
@@ -86,15 +86,15 @@ $ openssl rsa -in key.pem -out nopass.pem
 
 Ntex keeps connections open to wait for subsequent requests.
 
-> _keep alive_ connection behavior is defined by server settings.
+> _keep alive_ connection behavior is defined by the [`HttpServiceConfig`][httpserviceconfig] settings, passed to `bind()` as part of the `SharedCfg`.
 
-- `Duration::from_secs(75)` or `KeepAlive::Timeout(75)`: enables 75 second keep-alive timer.
+- `KeepAlive::Timeout(Seconds(75))`: enables 75 second keep-alive timer.
 - `KeepAlive::Os`: uses OS keep-alive.
-- `None` or `KeepAlive::Disabled`: disables keep-alive.
+- `KeepAlive::Disabled`: disables keep-alive.
 
 <CodeBlock example="server" file="keep_alive.rs" section="keep-alive" />
 
-If the first option above is selected, then keep-alive is enabled for HTTP/1.1 requests if the response does not explicitly disallow it by, for example, setting the [connection type][httpconnectiontype] to `Close` or `Upgrade`. Force closing a connection can be done with [the `force_close()` method on `HttpResponseBuilder`](https://docs.rs/ntex/latest/web/struct.HttpResponseBuilder.html#method.force_close)
+If the first option above is selected, then keep-alive is enabled for HTTP/1.1 requests if the response does not explicitly disallow it by, for example, setting the [connection type][httpconnectiontype] to `Close` or `Upgrade`. Force closing a connection can be done with [the `force_close()` method on `HttpResponseBuilder`](https://docs.rs/ntex/latest/ntex/http/struct.ResponseBuilder.html#method.force_close)
 
 > Keep-alive is **off** for HTTP/1.0 and is **on** for HTTP/1.1 and HTTP/2.0.
 
@@ -102,13 +102,15 @@ If the first option above is selected, then keep-alive is enabled for HTTP/1.1 r
 
 ## Graceful shutdown
 
-`HttpServer` supports graceful shutdown. After receiving a stop signal, workers have a specific amount of time to finish serving requests. Any workers still alive after the timeout are force-dropped. By default the shutdown timeout is set to 30 seconds. You can change this parameter with the [`HttpServer::shutdown_timeout()`][shutdowntimeout] method.
+`HttpServer` supports graceful shutdown. After receiving a stop signal, workers have a specific amount of time to finish serving requests. Any workers still alive after the timeout are force-dropped. By default the shutdown timeout is set to 30 seconds. You can change this parameter with the [`HttpServer::graceful_shutdown_timeout()`][shutdowntimeout] method.
 
 `HttpServer` handles several OS signals. _CTRL-C_ is available on all OSes, other signals are available on unix systems.
 
 - _SIGINT_ - Force shutdown workers
 - _SIGTERM_ - Graceful shutdown workers
 - _SIGQUIT_ - Force shutdown workers
+
+> SIGQUIT and application panics can be configured to stop the server gracefully with [`HttpServer::graceful_shutdown()`][gracefulshutdown] method.
 
 > It is possible to disable signal handling with [`HttpServer::disable_signals()`][disablesignals] method.
 
@@ -121,6 +123,11 @@ If the first option above is selected, then keep-alive is enabled for HTTP/1.1 r
 [workers]: https://docs.rs/ntex/latest/ntex/web/struct.HttpServer.html#method.workers
 [tlsalpn]: https://tools.ietf.org/html/rfc7301
 [exampleopenssl]: https://github.com/ntex-rs/examples/tree/master/openssl
-[shutdowntimeout]: https://docs.rs/ntex/latest/ntex/web/struct.HttpServer.html#method.shutdown_timeout
+[shutdowntimeout]: https://docs.rs/ntex/latest/ntex/web/struct.HttpServer.html#method.graceful_shutdown_timeout
+[gracefulshutdown]: https://docs.rs/ntex/latest/ntex/web/struct.HttpServer.html#method.graceful_shutdown
+[webserver]: https://docs.rs/ntex/latest/ntex/web/fn.server.html
+[serverwithconfig]: https://docs.rs/ntex/latest/ntex/web/fn.server_with_config.html
+[sharedcfg]: https://docs.rs/ntex/latest/ntex/struct.SharedCfg.html
+[httpserviceconfig]: https://docs.rs/ntex/latest/ntex/http/struct.HttpServiceConfig.html
 [disablesignals]: https://docs.rs/ntex/latest/ntex/web/struct.HttpServer.html#method.disable_signals
 [httpconnectiontype]: https://docs.rs/ntex/latest/ntex/http/enum.ConnectionType.html

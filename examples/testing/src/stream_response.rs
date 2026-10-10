@@ -11,7 +11,7 @@ async fn sse(_req: web::HttpRequest) -> web::HttpResponse {
 
     // yields `data: N` where N in [5; 1]
     let server_events =
-        stream::poll_fn(move |_cx| -> Poll<Option<Result<Bytes, web::Error>>> {
+        stream::poll_fn(move |_cx| -> Poll<Option<Result<Bytes, std::io::Error>>> {
             if counter == 0 {
                 return Poll::Ready(None);
             }
@@ -20,14 +20,14 @@ async fn sse(_req: web::HttpRequest) -> web::HttpResponse {
             Poll::Ready(Some(Ok(Bytes::from(payload))))
         });
 
-    web::HttpResponse::build(http::StatusCode::OK)
+    web::HttpResponse::builder(http::StatusCode::OK)
         .set_header(http::header::CONTENT_TYPE, "text/event-stream")
         .set_header(http::header::CONTENT_ENCODING, "identity")
         .streaming(server_events)
 }
 
 pub fn main() {
-    web::App::new().route("/", web::get().to(sse));
+    let _app = web::App::default().route("/", web::get().to(sse));
 }
 
 #[cfg(test)]

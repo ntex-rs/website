@@ -74,7 +74,7 @@ A _variable part_ (replacement marker) is specified in the form _\{identifier\}_
 
 A replacement marker in a pattern matches the regular expression `[^{}/]+`.
 
-A `match_info` is the `Params` object representing the dynamic parts extracted from a _URL_ based on the routing pattern. It is available as _request.match_info_. For example, the following pattern defines one literal segment (foo) and two replacement markers (baz, and bar):
+A `match_info` is the [`Path`][pathget] object representing the dynamic parts extracted from a _URL_ based on the routing pattern. It is available as _request.match_info_. For example, the following pattern defines one literal segment (foo) and two replacement markers (baz, and bar):
 
 ```
 foo/{baz}/{bar}
@@ -256,11 +256,11 @@ If the path pattern can not be found in the routing table or a resource can not 
 [routemethod]: https://docs.rs/ntex/latest/ntex/web/struct.Route.html#method.method
 [routeto]: https://docs.rs/ntex/latest/ntex/web/struct.Route.html#method.to
 [matchinfo]: https://docs.rs/ntex/latest/ntex/web/struct.HttpRequest.html#method.match_info
-[pathget]: https://docs.rs/ntex/latest/ntex/web/types/struct.Path.html#method.get
+[pathget]: https://docs.rs/ntex/latest/ntex/router/struct.Path.html#method.get
 [pathstruct]: https://docs.rs/ntex/latest/ntex/web/types/struct.Path.html
 [query]: https://docs.rs/ntex/latest/ntex/web/types/struct.Query.html
 [urlfor]: https://docs.rs/ntex/latest/ntex/web/struct.HttpRequest.html#method.url_for
-[urlobj]: https://docs.rs/url/1.7.2/url/struct.Url.html
+[urlobj]: https://docs.rs/urly/latest/urly/struct.Url.html
 [guardtrait]: https://docs.rs/ntex/latest/ntex/web/guard/trait.Guard.html
 [guardfuncs]: https://docs.rs/ntex/latest/ntex/web/guard/index.html#functions
 [requestextensions]: https://docs.rs/ntex/latest/ntex/web/struct.HttpRequest.html#method.extensions

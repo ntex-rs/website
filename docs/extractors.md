@@ -8,7 +8,7 @@ import CodeBlock from "@site/src/components/code_block.js";
 
 Ntex provides a facility for type-safe request information access called _extractors_ (i.e., `impl FromRequest`). There are lots of built-in extractor implementations (see [implementors](https://docs.rs/ntex/latest/ntex/web/trait.FromRequest.html#implementors)).
 
-An extractor can be accessed as an argument to a handler function. Ntex supports up to 12 extractors per handler function. Argument position does not matter.
+An extractor can be accessed as an argument to a handler function. Ntex supports up to 16 extractors per handler function. Argument position does not matter.
 
 <CodeBlock example="extractors" file="main.rs" section="option-one" />
 
@@ -40,7 +40,7 @@ The [`Query<T>`][querystruct] type provides extraction functionality for the req
 
 <CodeBlock example="extractors" file="json_one.rs" section="json-one" />
 
-Some extractors provide a way to configure the extraction process. To configure an extractor, pass its configuration object to the resource's `.state()` method. In the case of _Json_ extractor it returns a [_JsonConfig_][jsonconfig]. You can configure the maximum size of the JSON payload as well as a custom error handler function.
+Some extractors provide a way to configure the extraction process. To configure an extractor, register its configuration object with [`WebAppConfig::set_state()`][webappconfig] and pass the config to [`App::with_config()`][appwithconfig]. In the case of _Json_ extractor it is a [_JsonConfig_][jsonconfig]. You can configure the maximum size of the JSON payload as well as a custom error handler function.
 
 The following example limits the size of the payload to 4kb and uses a custom error handler.
 
@@ -58,25 +58,24 @@ A URL-encoded form body can be extracted to a struct, much like `Json<T>`. This 
 
 Ntex also provides many other extractors, here's a few important ones:
 
-- [`State`][statestruct] - For accessing pieces of application state.
 - [`HttpRequest`][httprequest] - `HttpRequest` is itself an extractor, in case you need access to other parts of the request.
 - `String` - You can convert a request's payload to a `String`. [_An example_][stringexample] is available in the rustdoc.
 - [`Bytes`][bytes] - You can convert a request's payload into _Bytes_. [_An example_][bytesexample] is available in the rustdoc.
 - [`Payload`][payload] - Low-level payload extractor primarily for building other extractors. [_An example_][payloadexample] is available in the rustdoc.
 
-## Application State Extractor
+## Application State
 
-Application state is accessible from the handler with the `web::types::State` extractor; however, state is accessible as a read-only reference. If you need mutable access to state, it must be implemented.
+Application state is not an extractor. Handlers registered with `to_with_state()` receive a reference to the application state as their first argument and the request state as the second one, followed by extractors. State is accessible as a read-only reference. If you need mutable access to state, it must be implemented, for example with `Cell` or `RefCell`.
 
 Here is an example of a handler that stores the number of processed requests:
 
 <CodeBlock example="request-handlers" file="main.rs" section="data" />
 
-Although this handler will work, `data.count` will only count the number of requests handled _by each worker thread_. To count the number of total requests across all threads, one should use shared `Arc` and [atomics][atomics].
+Although this handler will work, `state.count` will only count the number of requests handled _by each worker thread_, because the state factory is called for each worker. To count the number of total requests across all threads, one should use shared `Arc` and [atomics][atomics].
 
 <CodeBlock example="request-handlers" file="handlers_arc.rs" section="arc" />
 
-**Note**: If you want the _entire_ state to be shared across all threads, use `web::types::State` and `app_data` as described in [Shared Mutable State][shared_mutable_state].
+**Note**: If you want the _entire_ state to be shared across all threads, create it outside of the state factory as described in [Shared Mutable State][shared_mutable_state].
 
 Be careful when using blocking synchronization primitives like `Mutex` or `RwLock` within your app state. Ntex handles requests asynchronously. It is a problem if the [_critical section_][critical_section] in your handler is too big or contains an `.await` point. If this is a concern, we would advise you to also read [Tokio's advice on using blocking `Mutex` in async code][tokio_std_mutex].
 
@@ -85,7 +84,8 @@ Be careful when using blocking synchronization primitives like `Mutex` or `RwLoc
 [jsonstruct]: https://docs.rs/ntex/latest/ntex/web/types/struct.Json.html
 [jsonconfig]: https://docs.rs/ntex/latest/ntex/web/types/struct.JsonConfig.html
 [formconfig]: https://docs.rs/ntex/latest/ntex/web/types/struct.FormConfig.html
-[statestruct]: https://docs.rs/ntex/latest/ntex/web/types/struct.State.html
+[webappconfig]: https://docs.rs/ntex/latest/ntex/web/struct.WebAppConfig.html#method.set_state
+[appwithconfig]: https://docs.rs/ntex/latest/ntex/web/struct.App.html#method.with_config
 [httprequest]: https://docs.rs/ntex/latest/ntex/web/struct.HttpRequest.html
 [stringexample]: https://docs.rs/ntex/latest/ntex/web/trait.FromRequest.html#impl-FromRequest-for-String
 [bytes]: https://docs.rs/ntex/latest/ntex/util/struct.Bytes.html

@@ -58,6 +58,15 @@ fn insert_new_user(
 // <main>
 type DbPool = r2d2::Pool<r2d2::ConnectionManager<SqliteConnection>>;
 
+#[derive(Clone)]
+struct AppState {
+    pool: DbPool,
+}
+
+impl web::State for AppState {
+    type Error = web::DefaultError;
+}
+
 #[ntex::main]
 async fn main() -> io::Result<()> {
     // connect to SQLite DB
@@ -66,13 +75,13 @@ async fn main() -> io::Result<()> {
         .build(manager)
         .expect("database URL should be valid path to SQLite DB file");
 
-    // start HTTP server on port 8080
-    web::HttpServer::new(async move || {
-        web::App::new()
-            .state(pool.clone())
-            .route("/{name}", web::get().to(index))
-    })
-    .bind(("127.0.0.1", 8080))?
+    // start HTTP server on port 8080,
+    // every worker gets a clone of the connection pool as its state
+    web::server_with_config(
+        async move || Ok(AppState { pool: pool.clone() }),
+        async |_| web::App::new().route("/{name}", web::get().to_with_state(index)),
+    )
+    .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
     .run()
     .await
 }
@@ -80,11 +89,12 @@ async fn main() -> io::Result<()> {
 
 // <index>
 async fn index(
-    pool: web::types::State<DbPool>,
+    state: &AppState,
+    _: (),
     name: web::types::Path<(String,)>,
-) -> Result<impl web::Responder, web::Error> {
+) -> Result<web::HttpResponse, web::error::BlockingError<diesel::result::Error>> {
     let (name,) = name.into_inner();
-    let pool = pool.get_ref().clone();
+    let pool = state.pool.clone();
 
     let user = web::block(move || {
         let mut conn = pool.get().expect("couldn't get db connection from pool");
@@ -92,8 +102,7 @@ async fn index(
         // So, it should be called within the `web::block` closure, as well.
         insert_new_user(&mut conn, name)
     })
-    .await
-    .map_err(web::error::ErrorInternalServerError)?;
+    .await?; // <- returns "500 Internal Server Error" on failure
 
     Ok(web::HttpResponse::Ok().json(&user))
 }

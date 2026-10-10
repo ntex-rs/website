@@ -8,14 +8,14 @@ use ntex::web;
 
 #[web::get("/")]
 async fn index(_req: web::HttpRequest) -> web::HttpResponse {
-    web::HttpResponse::Ok().streaming(once(ok::<_, web::Error>(Bytes::from_static(b"data"))))
+    web::HttpResponse::Ok().streaming(once(ok::<_, io::Error>(Bytes::from_static(b"data"))))
 }
 // </chunked>
 
 #[ntex::main]
 async fn main() -> io::Result<()> {
-    web::HttpServer::new(async || web::App::new().service(index))
-        .bind(("127.0.0.1", 8080))
+    web::HttpServer::new(async |_| web::App::new().service(index))
+        .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())
         .unwrap()
         .run()
         .await

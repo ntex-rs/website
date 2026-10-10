@@ -4,6 +4,6 @@ version = "1.0.0"
 edition = "2018"
 
 [dependencies]
-ntex = { version = "3", features = ["tokio"] }
-ntex-files = "3"
+ntex = { version = "4", features = ["tokio"] }
+ntex-files = "4"
 mime = "0.3"

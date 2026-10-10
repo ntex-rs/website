@@ -6,12 +6,13 @@ use ntex::web;
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(Env::default().default_filter_or("info"));
 
-    web::HttpServer::new(async || {
+    web::HttpServer::new(async |_| {
         web::App::new()
-            .wrap(web::middleware::Logger::default())
-            .wrap(web::middleware::Logger::new("%a %{User-Agent}i"))
+            .middleware(web::middleware::Logger::default())
+            .middleware(web::middleware::Logger::new("%a %{User-Agent}i"))
+            .route("/", web::get().to(async || "Hello"))
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
     .run()
     .await
 }

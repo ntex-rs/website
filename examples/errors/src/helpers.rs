@@ -7,17 +7,17 @@ struct MyError {
 }
 
 #[web::get("/")]
-async fn index() -> Result<String, web::Error> {
+async fn index() -> Result<String, web::error::InternalError<&'static str>> {
     let result = Err(MyError { name: "test error" });
 
-    result.map_err(|err| web::error::ErrorBadRequest(err.name).into())
+    result.map_err(|err| web::error::ErrorBadRequest(err.name))
 }
 // </helpers>
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(async || web::App::new().service(index))
-        .bind(("127.0.0.1", 8080))?
+    web::HttpServer::new(async |_| web::App::new().service(index))
+        .bind(("127.0.0.1", 8080), ntex::SharedCfg::default())?
         .run()
         .await
 }

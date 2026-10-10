@@ -7,7 +7,7 @@ module.exports = {
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/logo.png',
+  favicon: 'img/ntex-icon.png',
   organizationName: 'ntex', // Usually your GitHub org/user name.
   projectName: 'ntex', // Usually your repo name.
   themeConfig: {
@@ -15,7 +15,7 @@ module.exports = {
       title: 'Ntex',
       logo: {
         alt: 'Ntex Logo',
-        src: 'img/logo.png',
+        src: 'img/ntex-icon.svg',
       },
       items: [
         {

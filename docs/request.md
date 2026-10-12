@@ -78,10 +78,10 @@ In the following example, we read and print the request payload chunk by chunk:
 
 <CodeBlock example="requests" file="streaming.rs" section="streaming" />
 
-[examples]: https://github.com/ntex-rs/examples/tree/master/json
+[examples]: https://github.com/ntex-rs/examples/tree/main/extractors/json
 [multipartstruct]: https://github.com/ntex-rs/ntex-extras/tree/master/ntex-multipart
 [fieldstruct]: https://github.com/ntex-rs/ntex-extras/tree/master/ntex-multipart
-[multipartexample]: https://github.com/ntex-rs/examples/tree/master/multipart
+[multipartexample]: https://github.com/ntex-rs/examples/tree/main/extractors/multipart
 [payloadextractor]: https://docs.rs/ntex/latest/ntex/web/types/struct.Payload.html
 [multipartcrate]: https://github.com/ntex-rs/ntex-extras/tree/master/ntex-multipart
 [formencoded]: https://docs.rs/ntex/latest/ntex/web/types/struct.Form.html

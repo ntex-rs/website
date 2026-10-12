@@ -20,6 +20,8 @@ async fn index(state: &AppState, _: (), req: HttpRequest) -> String {
 }
 ```
 
+The request state starts as `()`. Filters can change its type, for example to the authenticated user, and the handler's second argument must match it. See the [state/web-state example][webstateexample].
+
 > For a complete list of implementations, check the [_Responder documentation_][responderimpls].
 
 Examples of valid handlers:
@@ -68,6 +70,7 @@ For this case, the [Either][either] type can be used. `Either` allows combining 
 
 [implfromrequest]: https://docs.rs/ntex/latest/ntex/web/trait.FromRequest.html
 [respondertrait]: https://docs.rs/ntex/latest/ntex/web/trait.Responder.html
+[webstateexample]: https://github.com/ntex-rs/examples/tree/main/state/web-state
 [responderimpls]: https://docs.rs/ntex/latest/ntex/web/trait.Responder.html#foreign-impls
 [either]: https://docs.rs/ntex/latest/ntex/util/enum.Either.html
 [webresponseerror]: https://docs.rs/ntex/latest/ntex/web/error/trait.WebResponseError.html

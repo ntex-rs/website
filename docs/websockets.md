@@ -14,12 +14,12 @@ The following is an example of a simple websocket echo server:
 
 > A simple websocket echo server example is available in the [examples directory][examples].
 
-> An example chat server with the ability to chat over a websocket or TCP connection is available in [websocket-chat directory][chat]
+> An example chat server with the ability to chat over a websocket or TCP connection is available in [websockets/chat directory][chat]
 
 [message]: https://docs.rs/ntex/latest/ntex/ws/enum.Message.html
 [frame]: https://docs.rs/ntex/latest/ntex/ws/enum.Frame.html
 [wssink]: https://docs.rs/ntex/latest/ntex/ws/struct.WsSink.html
 [wsstart]: https://docs.rs/ntex/latest/ntex/web/ws/fn.start.html
 [service]: https://docs.rs/ntex/latest/ntex/trait.Service.html
-[examples]: https://github.com/ntex-rs/examples/tree/master/websocket
-[chat]: https://github.com/ntex-rs/examples/tree/master/websocket-chat
+[examples]: https://github.com/ntex-rs/examples/tree/main/websockets/basic
+[chat]: https://github.com/ntex-rs/examples/tree/main/websockets/chat

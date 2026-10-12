@@ -8,8 +8,8 @@ import CodeBlock from "@site/src/components/code_block.js";
 
 We have several example projects showing use of async database adapters:
 
-- R2D2: https://github.com/ntex-rs/examples/tree/master/r2d2
-- Diesel: https://github.com/ntex-rs/examples/tree/master/diesel
+- R2D2: https://github.com/ntex-rs/examples/tree/main/db/r2d2
+- Diesel: https://github.com/ntex-rs/examples/tree/main/db/diesel
 
 # Diesel
 
@@ -29,7 +29,7 @@ This example uses the `?` operator, the `BlockingError` type implements [`WebRes
 
 <CodeBlock example="databases" file="main.rs" section="index" />
 
-That's it! See the full example here: https://github.com/ntex-rs/examples/tree/master/diesel
+That's it! See the full example here: https://github.com/ntex-rs/examples/tree/main/db/diesel
 
 [web-block]: https://docs.rs/ntex/latest/ntex/web/fn.block.html
 [response-error]: https://docs.rs/ntex/latest/ntex/web/error/trait.WebResponseError.html

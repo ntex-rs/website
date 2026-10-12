@@ -48,6 +48,8 @@ Key takeaways:
 - State initialized _inside_ the state factory is local to the worker thread and may become de-synced if modified.
 - To achieve _globally shared state_, it must be created **outside** of the state factory and moved/cloned in.
 
+> A complete example of process-wide and per-worker state is available in the [state/process example][stateexample]. The [state/web-state example][webstateexample] shows how middleware, filters, handlers and error renderers use the application state, and how filters change the request state type to enforce handler requirements, such as an authenticated user, at compile time.
+
 ## Using an Application Scope to Compose Applications
 
 The [`web::scope()`][webscope] method allows setting a resource group prefix. This scope represents a resource prefix that will be prepended to all resource patterns added by the resource configuration. This can be used to help mount a set of routes at a different location than the original author intended while still maintaining the same resource names.
@@ -85,7 +87,8 @@ Each [`ServiceConfig`][serviceconfig] can have its own `routes`, `services` and 
 <!-- LINKS -->
 
 [usingappprefix]: /docs/url-dispatch
-[stateexample]: https://github.com/ntex-rs/examples/blob/master/basics/src/main.rs
+[stateexample]: https://github.com/ntex-rs/examples/tree/main/state/process
+[webstateexample]: https://github.com/ntex-rs/examples/tree/main/state/web-state
 [guardtrait]: https://docs.rs/ntex/latest/ntex/web/guard/trait.Guard.html
 [guardfuncs]: https://docs.rs/ntex/latest/ntex/web/guard/index.html#functions
 [guardheader]: https://docs.rs/ntex/latest/ntex/web/guard/fn.Header.html

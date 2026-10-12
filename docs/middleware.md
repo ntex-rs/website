@@ -23,6 +23,8 @@ The following demonstrates creating a simple middleware:
 
 <CodeBlock example="middleware" file="main.rs" section="simple" />
 
+> More middleware examples are available in the [middleware example][middlewareexample]. The [state/web-state example][webstateexample] shows a middleware that uses the application state in `create()` and through `ctx.st()`.
+
 > ntex provides several useful middleware, such as _logging_, _user sessions_, _compress_, etc.
 
 **Note: middleware runs in registration order for the request and in reverse order for the response. The first registered middleware receives the request first and the response last.**
@@ -104,4 +106,6 @@ You can use the `ErrorHandlers::handler()` method to register a custom error han
 [ntexsession]: https://github.com/ntex-rs/ntex-extras/tree/master/ntex-session
 [envlogger]: https://docs.rs/env_logger/*/env_logger/
 [servicetrait]: https://docs.rs/ntex/latest/ntex/trait.Service.html
+[middlewareexample]: https://github.com/ntex-rs/examples/tree/main/middleware
+[webstateexample]: https://github.com/ntex-rs/examples/tree/main/state/web-state
 [middlewaretrait]: https://docs.rs/ntex/latest/ntex/trait.Middleware.html

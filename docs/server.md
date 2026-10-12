@@ -82,6 +82,8 @@ To remove the password, then copy nopass.pem to key.pem
 $ openssl rsa -in key.pem -out nopass.pem
 ```
 
+> Complete [openssl][exampleopenssl] and [rustls][examplerustls] examples are available in the examples repository.
+
 ## Keep-Alive
 
 ntex keeps connections open to wait for subsequent requests.
@@ -122,7 +124,8 @@ If the first option above is selected, then keep-alive is enabled for HTTP/1.1 r
 [bindrusttls]: https://docs.rs/ntex/latest/ntex/web/struct.HttpServer.html#method.bind_rustls
 [workers]: https://docs.rs/ntex/latest/ntex/web/struct.HttpServer.html#method.workers
 [tlsalpn]: https://tools.ietf.org/html/rfc7301
-[exampleopenssl]: https://github.com/ntex-rs/examples/tree/master/openssl
+[exampleopenssl]: https://github.com/ntex-rs/examples/tree/main/tls/openssl
+[examplerustls]: https://github.com/ntex-rs/examples/tree/main/tls/rustls
 [shutdowntimeout]: https://docs.rs/ntex/latest/ntex/web/struct.HttpServer.html#method.graceful_shutdown_timeout
 [gracefulshutdown]: https://docs.rs/ntex/latest/ntex/web/struct.HttpServer.html#method.graceful_shutdown
 [webserver]: https://docs.rs/ntex/latest/ntex/web/fn.server.html

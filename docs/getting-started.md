@@ -49,6 +49,11 @@ Further append the following `main` function to `src/main.rs`:
 
 That's it! Compile and run the program with `cargo run`. The `#[ntex::main]` macro executes the async main function within the ntex runtime. Now you can go to `http://127.0.0.1:8080/` or any of the other routes you defined to see the results.
 
+## Next steps
+
+To learn how ntex works under the hood, read the [ntex framework guide][guide]. It covers services and pipelines, the runtime and server, the I/O layer, building web applications (including WebSockets), and byte buffers.
+
 <!-- LINKS -->
 
 [rustguide]: https://doc.rust-lang.org/book/ch01-01-installation.html
+[guide]: https://docs.ntex.rs/
